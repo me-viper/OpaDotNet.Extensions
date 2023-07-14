@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpaDotNet.Extensions.AspNetCore", "src\OpaDotNet.Extensions.AspNetCore\OpaDotNet.Extensions.AspNetCore.csproj", "{A820871F-2A6B-4FA4-91F3-5C70CF388730}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpaDotNet.Extensions.Yarp", "src\OpaDotNet.Extensions.Yarp\OpaDotNet.Extensions.Yarp.csproj", "{2106F0D2-1C1E-4850-8657-A6DDF8D3103B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8D4A1273-59AE-406F-BEA9-46E148935FF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpaDotNet.Extensions.AspNetCore.Tests", "tests\OpaDotNet.Extensions.AspNetCore.Tests\OpaDotNet.Extensions.AspNetCore.Tests.csproj", "{8743CA2A-40B7-4317-AF6E-D38D9F30E885}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpaDotNet.Extensions.Yarp.Tests", "tests\OpaDotNet.Extensions.Yarp.Tests\OpaDotNet.Extensions.Yarp.Tests.csproj", "{FA2EE86C-6B08-48CB-B355-D2E4D8FC5DE7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A820871F-2A6B-4FA4-91F3-5C70CF388730}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A820871F-2A6B-4FA4-91F3-5C70CF388730}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A820871F-2A6B-4FA4-91F3-5C70CF388730}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A820871F-2A6B-4FA4-91F3-5C70CF388730}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2106F0D2-1C1E-4850-8657-A6DDF8D3103B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2106F0D2-1C1E-4850-8657-A6DDF8D3103B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2106F0D2-1C1E-4850-8657-A6DDF8D3103B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2106F0D2-1C1E-4850-8657-A6DDF8D3103B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8743CA2A-40B7-4317-AF6E-D38D9F30E885}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8743CA2A-40B7-4317-AF6E-D38D9F30E885}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8743CA2A-40B7-4317-AF6E-D38D9F30E885}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8743CA2A-40B7-4317-AF6E-D38D9F30E885}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA2EE86C-6B08-48CB-B355-D2E4D8FC5DE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA2EE86C-6B08-48CB-B355-D2E4D8FC5DE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA2EE86C-6B08-48CB-B355-D2E4D8FC5DE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA2EE86C-6B08-48CB-B355-D2E4D8FC5DE7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8743CA2A-40B7-4317-AF6E-D38D9F30E885} = {8D4A1273-59AE-406F-BEA9-46E148935FF2}
+		{FA2EE86C-6B08-48CB-B355-D2E4D8FC5DE7} = {8D4A1273-59AE-406F-BEA9-46E148935FF2}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,9 @@
+mode: ContinuousDelivery
+tag-prefix: '[vV]'
+branches:
+  develop:
+    regex: ^dev(elop)?(ment)?$
+    tag: preview
+ignore:
+  sha: []
+merge-message-formats: {}

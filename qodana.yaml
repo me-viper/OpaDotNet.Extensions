@@ -1,0 +1,10 @@
+version: 1.0
+profile:
+  name: qodana.recommended
+exclude:
+  - name: All
+    paths:
+      - tests
+      - samples
+      - bench
+  - name: ArrangeTrailingCommaInMultilineLists

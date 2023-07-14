@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <IsPackable>true</IsPackable>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <PackageId>$(AssemblyName)</PackageId>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Summary>OpaDotNet.Wasm AspNetCore extensions</Summary>
+        <Description>OpaDotNet.Wasm for AspNetCore applications</Description>
+        <PackageProjectUrl>https://github.com/me-viper/OpaDotNet.Extensions</PackageProjectUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <DefaultLanguage>en-US</DefaultLanguage>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authorization" />
+        <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+        <PackageReference Include="OpaDotNet.Wasm" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Microsoft.AspNetCore.Authorization" />
+
+        <Using Include="Microsoft.Extensions.Logging" />
+        <Using Include="Microsoft.Extensions.Logging.Abstractions" />
+    </ItemGroup>
+
+</Project>

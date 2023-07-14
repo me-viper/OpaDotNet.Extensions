@@ -1,0 +1,35 @@
+#nullable enable
+OpaDotNet.Extensions.AspNetCore.IOpaPolicyService
+OpaDotNet.Extensions.AspNetCore.IOpaPolicyService.Evaluate<TInput, TOutput>(TInput input, string! entrypoint) -> TOutput
+OpaDotNet.Extensions.AspNetCore.IOpaPolicyService.EvaluatePredicate<TInput>(TInput input, string! entrypoint) -> bool
+OpaDotNet.Extensions.AspNetCore.IOpaPolicyService.EvaluateRaw(System.ReadOnlySpan<char> inputJson, string! entrypoint) -> string!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyAuthorizeAttribute
+OpaDotNet.Extensions.AspNetCore.OpaPolicyAuthorizeAttribute.OpaPolicyAuthorizeAttribute(string! module, string? rule) -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicyBackgroundCompiler
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.OpaPolicyHandler(OpaDotNet.Extensions.AspNetCore.IOpaPolicyService! service, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions!>! options, Microsoft.Extensions.Logging.ILogger<OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler!>! logger) -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>.OpaPolicyHandler(OpaDotNet.Extensions.AspNetCore.IOpaPolicyService! service, Microsoft.Extensions.Logging.ILogger<OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>!>! logger) -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.AllowedHeaders.get -> System.Collections.Generic.HashSet<string!>!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.AllowedHeaders.set -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.EngineOptions.get -> OpaDotNet.Wasm.WasmPolicyEngineOptions?
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.EngineOptions.set -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.Entrypoints.get -> System.Collections.Generic.HashSet<string!>?
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.Entrypoints.set -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.IncludeClaimsInHttpRequest.get -> bool
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.IncludeClaimsInHttpRequest.set -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.OpaPolicyHandlerOptions() -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.PolicyBundlePath.get -> string!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.PolicyBundlePath.set -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicyProvider
+OpaDotNet.Extensions.AspNetCore.OpaPolicyProvider.GetDefaultPolicyAsync() -> System.Threading.Tasks.Task<Microsoft.AspNetCore.Authorization.AuthorizationPolicy!>!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyProvider.GetFallbackPolicyAsync() -> System.Threading.Tasks.Task<Microsoft.AspNetCore.Authorization.AuthorizationPolicy?>!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyProvider.GetPolicyAsync(string! policyName) -> System.Threading.Tasks.Task<Microsoft.AspNetCore.Authorization.AuthorizationPolicy?>!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyProvider.OpaPolicyProvider(Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Authorization.AuthorizationOptions!>! options) -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement
+OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.Entrypoint.get -> string!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.OpaPolicyRequirement(string! entrypoint) -> void
+override OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement) -> System.Threading.Tasks.Task!
+override OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement, TResource resource) -> System.Threading.Tasks.Task!
+override OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.ToString() -> string!
