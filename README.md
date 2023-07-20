@@ -11,6 +11,7 @@ for [OpaDotNet](https://github.com/me-viper/OpaDotNet) project.
 |                                 | Official                                                                                                                                        | Preview                                                                                                                                            |
 |---------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | OpaDotNet.Extensions.AspNetCore | [![NuGet](https://img.shields.io/nuget/v/OpaDotNet.Extensions.AspNetCore.svg)](https://www.nuget.org/packages/OpaDotNet.Extensions.AspNetCore/) | [![Nuget](https://img.shields.io/nuget/vpre/OpaDotNet.Extensions.AspNetCore.svg)](https://www.nuget.org/packages/OpaDotNet.Extensions.AspNetCore/) |
+| OpaDotNet.Extensions.Yarp       | [![NuGet](https://img.shields.io/nuget/v/OpaDotNet.Extensions.Yarp.svg)](https://www.nuget.org/packages/OpaDotNet.Extensions.Yarp/) | [![Nuget](https://img.shields.io/nuget/vpre/OpaDotNet.Extensions.Yarp.svg)](https://www.nuget.org/packages/OpaDotNet.Extensions.Yarp/)  |
 
 ## Getting Started
 
