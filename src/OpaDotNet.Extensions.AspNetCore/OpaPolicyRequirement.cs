@@ -1,9 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
+using JetBrains.Annotations;
+
 namespace OpaDotNet.Extensions.AspNetCore;
 
 public record OpaPolicyRequirement : IAuthorizationRequirement
 {
+    [PublicAPI]
     public OpaPolicyRequirement(string entrypoint)
     {
         ArgumentException.ThrowIfNullOrEmpty(entrypoint);
