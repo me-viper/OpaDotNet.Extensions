@@ -26,7 +26,7 @@ public class OpaPolicyServiceTests
     [Fact]
     public async Task Recompilation()
     {
-        var opts = new OptionsWrapper<OpaPolicyHandlerOptions>(
+        var opts = new OptionsWrapper<OpaAuthorizationOptions>(
             new()
             {
                 PolicyBundlePath = "./Policy",

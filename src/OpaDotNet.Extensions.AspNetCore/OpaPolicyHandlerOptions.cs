@@ -7,7 +7,7 @@ using OpaDotNet.Wasm;
 namespace OpaDotNet.Extensions.AspNetCore;
 
 [ExcludeFromCodeCoverage]
-public class OpaPolicyHandlerOptions
+public class OpaAuthorizationOptions
 {
     /// <summary>
     /// Headers that can be used for policy evaluation. Supports regex.

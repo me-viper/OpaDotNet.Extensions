@@ -9,11 +9,11 @@ public class OpaPolicyHandler : AuthorizationHandler<OpaPolicyRequirement>
 
     private readonly ILogger _logger;
 
-    private readonly IOptions<OpaPolicyHandlerOptions> _options;
+    private readonly IOptions<OpaAuthorizationOptions> _options;
 
     public OpaPolicyHandler(
         IOpaPolicyService service,
-        IOptions<OpaPolicyHandlerOptions> options,
+        IOptions<OpaAuthorizationOptions> options,
         ILogger<OpaPolicyHandler> logger)
     {
         ArgumentNullException.ThrowIfNull(service);

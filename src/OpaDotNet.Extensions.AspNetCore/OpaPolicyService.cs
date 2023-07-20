@@ -22,7 +22,7 @@ internal class OpaPolicyService : IOpaPolicyService, IDisposable
 
     public OpaPolicyService(
         IOpaPolicyBackgroundCompiler compiler,
-        IOptions<OpaPolicyHandlerOptions> options,
+        IOptions<OpaAuthorizationOptions> options,
         OpaEvaluatorPoolProvider poolProvider,
         ILogger<OpaPolicyService> logger)
     {

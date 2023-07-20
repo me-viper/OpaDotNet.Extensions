@@ -274,7 +274,7 @@ public class AspNetCoreTests
                 {
                     builder.AddLogging(p => p.AddXunit(output).AddFilter(pp => pp > LogLevel.Trace));
 
-                    builder.AddOpaAuthorizationHandler(
+                    builder.AddOpaAuthorization(
                         p =>
                         {
                             p.PolicyBundlePath = "./Policy";

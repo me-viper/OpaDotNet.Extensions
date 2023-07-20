@@ -12,7 +12,7 @@ namespace OpaDotNet.Extensions.AspNetCore;
 [PublicAPI]
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddOpaAuthorizationHandler(
+    public static IServiceCollection AddOpaAuthorization(
         this IServiceCollection services,
         IConfiguration configuration,
         string sectionName = "OpaAuthorizationHandler")
@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
         ArgumentException.ThrowIfNullOrEmpty(sectionName);
 
         services.AddOptions();
-        services.Configure<OpaPolicyHandlerOptions>(configuration.GetRequiredSection(sectionName));
+        services.Configure<OpaAuthorizationOptions>(configuration.GetRequiredSection(sectionName));
 
         services.TryAddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
         services.TryAddSingleton<IAuthorizationPolicyProvider, OpaPolicyProvider>();
@@ -33,9 +33,9 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddOpaAuthorizationHandler(
+    public static IServiceCollection AddOpaAuthorization(
         this IServiceCollection services,
-        Action<OpaPolicyHandlerOptions> configure)
+        Action<OpaAuthorizationOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configure);

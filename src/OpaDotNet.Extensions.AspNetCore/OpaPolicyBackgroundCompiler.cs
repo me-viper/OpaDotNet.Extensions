@@ -15,7 +15,7 @@ public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyBackgroundC
 
     private readonly ILoggerFactory _loggerFactory;
 
-    private readonly IOptions<OpaPolicyHandlerOptions> _options;
+    private readonly IOptions<OpaAuthorizationOptions> _options;
 
     private CancellationTokenSource _changeTokenSource = new();
 
@@ -27,7 +27,7 @@ public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyBackgroundC
 
     public OpaPolicyBackgroundCompiler(
         IRegoCompiler compiler,
-        IOptions<OpaPolicyHandlerOptions> options,
+        IOptions<OpaAuthorizationOptions> options,
         ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(compiler);
