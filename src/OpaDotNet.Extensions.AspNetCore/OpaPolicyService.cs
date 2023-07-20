@@ -8,18 +8,22 @@ namespace OpaDotNet.Extensions.AspNetCore;
 
 internal class OpaPolicyService : IOpaPolicyService, IDisposable
 {
-    private readonly IOptions<OpaPolicyHandlerOptions> _options;
-
-    private readonly ObjectPool<IOpaEvaluator> _evaluatorPool;
+    private ObjectPool<IOpaEvaluator> _evaluatorPool;
 
     private readonly ILogger _logger;
 
     private readonly IDisposable _recompilationMonitor;
 
+    private readonly OpaEvaluatorPoolProvider _poolProvider;
+
+    private readonly IOpaPolicyBackgroundCompiler _compiler;
+
+    private readonly object _syncLock = new();
+
     public OpaPolicyService(
         IOpaPolicyBackgroundCompiler compiler,
         IOptions<OpaPolicyHandlerOptions> options,
-        ObjectPoolProvider poolProvider,
+        OpaEvaluatorPoolProvider poolProvider,
         ILogger<OpaPolicyService> logger)
     {
         ArgumentNullException.ThrowIfNull(compiler);
@@ -27,23 +31,42 @@ internal class OpaPolicyService : IOpaPolicyService, IDisposable
         ArgumentNullException.ThrowIfNull(poolProvider);
         ArgumentNullException.ThrowIfNull(logger);
 
-        _options = options;
-        _evaluatorPool = poolProvider.Create(new OpaEvaluatorPoolPolicy(() => compiler.Factory.Create()));
+        _compiler = compiler;
+        _poolProvider = poolProvider;
         _logger = logger;
 
+        _poolProvider.MaximumRetained = options.Value.MaximumEvaluatorsRetained;
+
+        _evaluatorPool = _poolProvider.Create(new OpaEvaluatorPoolPolicy(() => _compiler.Factory.Create()));
         _recompilationMonitor = ChangeToken.OnChange(compiler.OnRecompiled, ResetPool);
     }
 
     private void ResetPool()
     {
         _logger.LogDebug("Recompiled. Resetting pool");
+
+        lock (_syncLock)
+        {
+            var oldPool = _evaluatorPool;
+            _evaluatorPool = _poolProvider.Create(new OpaEvaluatorPoolPolicy(() => _compiler.Factory.Create()));
+
+            if (oldPool is not IDisposable pool)
+            {
+                _logger.LogWarning("Pool is not disposable");
+                return;
+            }
+
+            _logger.LogDebug("Disposing old pool");
+            pool.Dispose();
+        }
     }
 
     public bool EvaluatePredicate<T>(T? input, string entrypoint)
     {
         ArgumentException.ThrowIfNullOrEmpty(entrypoint);
 
-        var evaluator = _evaluatorPool.Get();
+        var pool = _evaluatorPool;
+        var evaluator = pool.Get();
 
         try
         {
@@ -52,7 +75,7 @@ internal class OpaPolicyService : IOpaPolicyService, IDisposable
         }
         finally
         {
-            _evaluatorPool.Return(evaluator);
+            pool.Return(evaluator);
         }
     }
 
@@ -60,7 +83,8 @@ internal class OpaPolicyService : IOpaPolicyService, IDisposable
     {
         ArgumentException.ThrowIfNullOrEmpty(entrypoint);
 
-        var evaluator = _evaluatorPool.Get();
+        var pool = _evaluatorPool;
+        var evaluator = pool.Get();
 
         try
         {
@@ -69,7 +93,7 @@ internal class OpaPolicyService : IOpaPolicyService, IDisposable
         }
         finally
         {
-            _evaluatorPool.Return(evaluator);
+            pool.Return(evaluator);
         }
     }
 
@@ -77,7 +101,8 @@ internal class OpaPolicyService : IOpaPolicyService, IDisposable
     {
         ArgumentException.ThrowIfNullOrEmpty(entrypoint);
 
-        var evaluator = _evaluatorPool.Get();
+        var pool = _evaluatorPool;
+        var evaluator = pool.Get();
 
         try
         {
@@ -85,12 +110,15 @@ internal class OpaPolicyService : IOpaPolicyService, IDisposable
         }
         finally
         {
-            _evaluatorPool.Return(evaluator);
+            pool.Return(evaluator);
         }
     }
 
     public void Dispose()
     {
         _recompilationMonitor.Dispose();
+
+        if (_evaluatorPool is IDisposable d)
+            d.Dispose();
     }
 }

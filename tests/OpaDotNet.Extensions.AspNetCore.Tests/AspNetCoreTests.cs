@@ -265,7 +265,8 @@ public class AspNetCoreTests
     private static TestServer CreateServer(
         ITestOutputHelper output,
         Func<HttpContext, Func<Task>, Task>? handler = null,
-        Uri? baseAddress = null)
+        Uri? baseAddress = null,
+        Func<IServiceCollection, IServiceCollection>? configureServices = null)
     {
         var builder = new WebHostBuilder()
             .ConfigureServices(
@@ -301,6 +302,8 @@ public class AspNetCoreTests
                     builder.AddAuthentication()
                         .AddScheme<AuthenticationSchemeOptions, TestAuthenticationSchemeHandler>("Test", null);
                     builder.AddAuthorization();
+
+                    configureServices?.Invoke(builder);
                 }
                 )
             .Configure(

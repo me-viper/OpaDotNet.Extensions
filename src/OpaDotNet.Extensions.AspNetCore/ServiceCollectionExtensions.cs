@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
         services.AddOptions();
         services.Configure(configure);
 
-        services.TryAddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
+        services.TryAddSingleton<OpaEvaluatorPoolProvider>();
         services.TryAddSingleton<IAuthorizationPolicyProvider, OpaPolicyProvider>();
         services.TryAddSingleton<IAuthorizationHandler, OpaPolicyHandler>();
         services.TryAddSingleton<IRegoCompiler, RegoCliCompiler>();

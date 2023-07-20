@@ -1,11 +1,22 @@
 #nullable enable
+OpaDotNet.Extensions.AspNetCore.IOpaPolicyBackgroundCompiler
+OpaDotNet.Extensions.AspNetCore.IOpaPolicyBackgroundCompiler.Factory.get -> OpaDotNet.Wasm.OpaEvaluatorFactory!
+OpaDotNet.Extensions.AspNetCore.IOpaPolicyBackgroundCompiler.OnRecompiled() -> Microsoft.Extensions.Primitives.IChangeToken!
 OpaDotNet.Extensions.AspNetCore.IOpaPolicyService
 OpaDotNet.Extensions.AspNetCore.IOpaPolicyService.Evaluate<TInput, TOutput>(TInput input, string! entrypoint) -> TOutput
 OpaDotNet.Extensions.AspNetCore.IOpaPolicyService.EvaluatePredicate<TInput>(TInput input, string! entrypoint) -> bool
 OpaDotNet.Extensions.AspNetCore.IOpaPolicyService.EvaluateRaw(System.ReadOnlySpan<char> inputJson, string! entrypoint) -> string!
+OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolPolicy
+OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolPolicy.OpaEvaluatorPoolPolicy(System.Func<OpaDotNet.Wasm.IOpaEvaluator!>! factory) -> void
+OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolProvider
+OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolProvider.OpaEvaluatorPoolProvider() -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyAuthorizeAttribute
 OpaDotNet.Extensions.AspNetCore.OpaPolicyAuthorizeAttribute.OpaPolicyAuthorizeAttribute(string! module, string? rule) -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyBackgroundCompiler
+OpaDotNet.Extensions.AspNetCore.OpaPolicyBackgroundCompiler.CompileBundle(bool recompiling, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyBackgroundCompiler.Factory.get -> OpaDotNet.Wasm.OpaEvaluatorFactory!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyBackgroundCompiler.OnRecompiled() -> Microsoft.Extensions.Primitives.IChangeToken!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyBackgroundCompiler.OpaPolicyBackgroundCompiler(OpaDotNet.Wasm.Compilation.IRegoCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions!>! options, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.OpaPolicyHandler(OpaDotNet.Extensions.AspNetCore.IOpaPolicyService! service, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions!>! options, Microsoft.Extensions.Logging.ILogger<OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler!>! logger) -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>
@@ -19,6 +30,8 @@ OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.Entrypoints.get -> Syste
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.Entrypoints.set -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.IncludeClaimsInHttpRequest.get -> bool
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.IncludeClaimsInHttpRequest.set -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.MaximumEvaluatorsRetained.get -> int
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.MaximumEvaluatorsRetained.set -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.OpaPolicyHandlerOptions() -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.PolicyBundlePath.get -> string!
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions.PolicyBundlePath.set -> void
@@ -30,6 +43,11 @@ OpaDotNet.Extensions.AspNetCore.OpaPolicyProvider.OpaPolicyProvider(Microsoft.Ex
 OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement
 OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.Entrypoint.get -> string!
 OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.OpaPolicyRequirement(string! entrypoint) -> void
+OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions
+override OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolPolicy.Create() -> OpaDotNet.Wasm.IOpaEvaluator!
+override OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolPolicy.Return(OpaDotNet.Wasm.IOpaEvaluator! obj) -> bool
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement) -> System.Threading.Tasks.Task!
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement, TResource resource) -> System.Threading.Tasks.Task!
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.ToString() -> string!
+static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddOpaAuthorizationHandler(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, string! sectionName = "OpaAuthorizationHandler") -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddOpaAuthorizationHandler(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<OpaDotNet.Extensions.AspNetCore.OpaPolicyHandlerOptions!>! configure) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!

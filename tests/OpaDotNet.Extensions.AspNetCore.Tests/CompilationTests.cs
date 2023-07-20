@@ -16,7 +16,7 @@ public class CompilationTests
     }
 
     [Fact]
-    public void Do()
+    public void Recompile()
     {
         var compiler = new CompilerStub();
 

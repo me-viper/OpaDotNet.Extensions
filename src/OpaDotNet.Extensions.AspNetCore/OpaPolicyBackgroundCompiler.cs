@@ -21,7 +21,9 @@ public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyBackgroundC
 
     private CancellationChangeToken _changeToken;
 
-    public OpaEvaluatorFactory Factory { get; private set; }
+    private readonly SemaphoreSlim _lock = new(1, 1);
+
+    public OpaEvaluatorFactory Factory { get; private set; } = default!;
 
     public OpaPolicyBackgroundCompiler(
         IRegoCompiler compiler,
@@ -49,12 +51,14 @@ public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyBackgroundC
         return _changeToken;
     }
 
-    private async Task CompileBundle(CancellationToken cancellationToken)
+    public async Task CompileBundle(bool recompiling, CancellationToken cancellationToken)
     {
         _logger.LogDebug("Compiling");
 
         try
         {
+            await _lock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
             var policy = await _compiler.CompileBundle(
                 _options.Value.PolicyBundlePath,
                 cancellationToken: cancellationToken,
@@ -68,11 +72,21 @@ public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyBackgroundC
                 loggerFactory: _loggerFactory,
                 options: _options.Value.EngineOptions
                 );
+
+            if (recompiling)
+            {
+                _logger.LogDebug("Recompilation completed. Triggering notifications");
+                _changeTokenSource.Cancel();
+            }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Bundle compilation failed");
             throw;
+        }
+        finally
+        {
+            _lock.Release();
         }
 
         _logger.LogDebug("Compilation succeeded");
@@ -80,7 +94,7 @@ public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyBackgroundC
 
     async Task IHostedService.StartAsync(CancellationToken cancellationToken)
     {
-        await CompileBundle(cancellationToken).ConfigureAwait(false);
+        await CompileBundle(false, cancellationToken).ConfigureAwait(false);
     }
 
     Task IHostedService.StopAsync(CancellationToken cancellationToken)

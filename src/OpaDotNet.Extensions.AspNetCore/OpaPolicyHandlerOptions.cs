@@ -26,4 +26,7 @@ public class OpaPolicyHandlerOptions
 
     [UsedImplicitly]
     public WasmPolicyEngineOptions? EngineOptions { get; set; }
+
+    [UsedImplicitly]
+    public int MaximumEvaluatorsRetained { get; set; } = Environment.ProcessorCount * 2;
 }
