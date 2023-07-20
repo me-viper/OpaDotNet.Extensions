@@ -60,9 +60,9 @@ internal class HttpRequestPolicyInput
     }
 
     [UsedImplicitly]
-    public ConnectionInfo Connection
+    public ConnectionInput Connection
     {
-        get => _request.HttpContext.Connection;
+        get => new(_request.HttpContext.Connection);
     }
 
     [UsedImplicitly]
@@ -73,6 +73,46 @@ internal class HttpRequestPolicyInput
 
     [UsedImplicitly]
     internal record ClaimInput(string Type, string Value);
+    
+    [UsedImplicitly]
+    internal class ConnectionInput
+    {
+        private readonly ConnectionInfo _connection;
+        
+        public ConnectionInput(ConnectionInfo connection)
+        {
+            _connection = connection;
+        }
+
+        [UsedImplicitly]
+        public string? RemoteIpAddress
+        {
+            get => _connection.RemoteIpAddress?.ToString();
+        }
+
+        [UsedImplicitly]
+        public int RemotePort
+        {
+            get => _connection.RemotePort;
+        }
+
+        [UsedImplicitly]
+        public string? LocalIpAddress
+        {
+            get => _connection.LocalIpAddress?.ToString();
+        }
+
+        [UsedImplicitly]
+        public int LocalPort
+        {
+            get => _connection.LocalPort;
+        }
+
+        // public X509Certificate2? ClientCertificate
+        // {
+        //     get => _connection.ClientCertificate;
+        // }
+    }
 
     public HttpRequestPolicyInput(
         HttpRequest request,
