@@ -31,6 +31,13 @@ jobs:
       run: dotnet gitversion /updateprojectfiles /output buildserver
     - name: Build
       run: dotnet build -c Release
+    - name: Download OPA CLI
+      run: |
+        echo "Downloading OPA ${OPA_CLI_VERSION}"
+        curl -L --fail -o /usr/local/bin/opa https://openpolicyagent.org/downloads/${OPA_CLI_VERSION}/opa_linux_amd64_static
+        chmod 755 /usr/local/bin/opa
+      env:
+        OPA_CLI_VERSION: ${{ vars.OPA_CLI_VERSION }}
     - name: Test
       run: dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Coveralls
