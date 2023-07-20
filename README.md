@@ -6,6 +6,12 @@
 This is AspNetCore and [Yarp](https://github.com/microsoft/reverse-proxy) specific extensions
 for [OpaDotNet](https://github.com/me-viper/OpaDotNet) project.
 
+## NuGet Packages
+
+|                 | Official | Preview |
+|-----------------|----------|---------|
+| OpaDotNet.Extensions.AspNetCore | [![NuGet](https://img.shields.io/nuget/v/OpaDotNet.Extensions.AspNetCore.svg)](https://www.nuget.org/packages/OpaDotNet.Extensions.AspNetCore/) | [![Nuget](https://img.shields.io/nuget/vpre/OpaDotNet.Extensions.AspNetCore.svg)](https://www.nuget.org/packages/OpaDotNet.Extensions.AspNetCore/)  |
+
 ## Getting Started
 
 See details for [AspNetCore](./src/OpaDotNet.Extensions.AspNetCore/README.md)
