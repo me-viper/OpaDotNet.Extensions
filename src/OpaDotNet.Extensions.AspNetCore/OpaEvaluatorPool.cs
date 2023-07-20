@@ -11,7 +11,7 @@ public class OpaEvaluatorPoolPolicy : PooledObjectPolicy<IOpaEvaluator>
     public OpaEvaluatorPoolPolicy(Func<IOpaEvaluator> factory)
     {
         ArgumentNullException.ThrowIfNull(factory);
-        
+
         _factory = factory;
     }
 

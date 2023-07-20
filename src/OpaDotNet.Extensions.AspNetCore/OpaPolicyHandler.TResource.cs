@@ -39,7 +39,7 @@ public class OpaPolicyHandler<TResource> : AuthorizationHandler<OpaPolicyRequire
         {
             _logger.LogError(ex, "Authorization policy failed");
         }
-        
+
         return Task.CompletedTask;
     }
 }

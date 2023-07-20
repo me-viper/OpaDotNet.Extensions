@@ -20,10 +20,10 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentException.ThrowIfNullOrEmpty(sectionName);
-        
+
         services.AddOptions();
         services.Configure<OpaPolicyHandlerOptions>(configuration.GetRequiredSection(sectionName));
-        
+
         services.TryAddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
         services.TryAddSingleton<IAuthorizationPolicyProvider, OpaPolicyProvider>();
         services.TryAddSingleton<IAuthorizationHandler, OpaPolicyHandler>();
@@ -32,17 +32,17 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     public static IServiceCollection AddOpaAuthorizationHandler(
         this IServiceCollection services,
         Action<OpaPolicyHandlerOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configure);
-        
+
         services.AddOptions();
         services.Configure(configure);
-        
+
         services.TryAddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
         services.TryAddSingleton<IAuthorizationPolicyProvider, OpaPolicyProvider>();
         services.TryAddSingleton<IAuthorizationHandler, OpaPolicyHandler>();

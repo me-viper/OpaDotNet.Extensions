@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 using JetBrains.Annotations;
@@ -59,7 +58,7 @@ internal class HttpRequestPolicyInput
     {
         get => _request.Protocol;
     }
-    
+
     [UsedImplicitly]
     public ConnectionInfo Connection
     {
@@ -86,7 +85,7 @@ internal class HttpRequestPolicyInput
         _request = request;
 
         //var allowAll = includedHeaders.Any(p => string.Equals("*", p, StringComparison.Ordinal));
-        
+
         Headers = request.Headers
             .Where(p => includedHeaders.Any(pp => Regex.IsMatch(p.Key, pp)))
             .ToDictionary(p => p.Key, p => (string?)p.Value);

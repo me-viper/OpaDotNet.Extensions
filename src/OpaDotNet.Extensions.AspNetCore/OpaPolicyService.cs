@@ -11,9 +11,9 @@ internal class OpaPolicyService : IOpaPolicyService, IDisposable
     private readonly IOptions<OpaPolicyHandlerOptions> _options;
 
     private readonly ObjectPool<IOpaEvaluator> _evaluatorPool;
-    
+
     private readonly ILogger _logger;
-    
+
     private readonly IDisposable _recompilationMonitor;
 
     public OpaPolicyService(
@@ -30,15 +30,15 @@ internal class OpaPolicyService : IOpaPolicyService, IDisposable
         _options = options;
         _evaluatorPool = poolProvider.Create(new OpaEvaluatorPoolPolicy(() => compiler.Factory.Create()));
         _logger = logger;
-        
+
         _recompilationMonitor = ChangeToken.OnChange(compiler.OnRecompiled, ResetPool);
     }
-    
+
     private void ResetPool()
     {
         _logger.LogDebug("Recompiled. Resetting pool");
     }
-    
+
     public bool EvaluatePredicate<T>(T? input, string entrypoint)
     {
         ArgumentException.ThrowIfNullOrEmpty(entrypoint);

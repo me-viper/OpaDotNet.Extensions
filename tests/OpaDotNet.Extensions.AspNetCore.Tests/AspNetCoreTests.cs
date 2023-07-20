@@ -97,7 +97,7 @@ public class AspNetCoreTests
         Assert.NotNull(transaction.Response);
         Assert.Equal(expected, transaction.Response.StatusCode);
     }
-    
+
     [Theory]
     [InlineData("u1", HttpStatusCode.OK)]
     [InlineData("wrong", HttpStatusCode.Forbidden)]
@@ -116,7 +116,7 @@ public class AspNetCoreTests
                     context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
             }
             );
-        
+
         async Task DoSimple()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{server.BaseAddress}");
@@ -132,7 +132,7 @@ public class AspNetCoreTests
             Assert.NotNull(transaction.Response);
             Assert.Equal(expected, transaction.Response.StatusCode);
         }
-        
+
         await Parallel.ForEachAsync(Enumerable.Range(0, 10_000), async (_, _) => await DoSimple());
     }
 
@@ -292,7 +292,7 @@ public class AspNetCoreTests
                     builder.AddSingleton<OpaPolicyBackgroundCompiler>();
                     builder.AddHostedService(p => p.GetRequiredService<OpaPolicyBackgroundCompiler>());
                     builder.AddSingleton<IOpaPolicyBackgroundCompiler>(p => p.GetRequiredService<OpaPolicyBackgroundCompiler>());
-                    
+
                     builder.AddSingleton<IAuthorizationHandler, OpaPolicyHandler<UserPolicyInput>>();
 
                     if (handler == null)
@@ -323,7 +323,7 @@ public class AspNetCoreTests
                         app.UseEndpoints(
                             p =>
                             {
-                                p.MapGet("/az/attr", [OpaPolicyAuthorize("az", "attr")] (context) => Task.FromResult(Results.Ok()));
+                                p.MapGet("/az/attr", [OpaPolicyAuthorize("az", "attr")](context) => Task.FromResult(Results.Ok()));
                                 p.MapGet(
                                     "/az/svc",
                                     async ([FromServices] IAuthorizationService azs, ClaimsPrincipal user, HttpContext context) =>
@@ -362,7 +362,7 @@ internal class TestAuthenticationSchemeHandler : AuthenticationHandler<Authentic
         var principal = new ClaimsPrincipal();
         var ticket = new AuthenticationTicket(principal, "Test");
         var result = AuthenticateResult.Success(ticket);
-        
+
         return Task.FromResult(result);
     }
 }

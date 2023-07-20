@@ -6,7 +6,7 @@ namespace OpaDotNet.Extensions.AspNetCore;
 
 public interface IOpaPolicyBackgroundCompiler
 {
-    OpaEvaluatorFactoryBase Factory { get; }
-    
+    OpaEvaluatorFactory Factory { get; }
+
     IChangeToken OnRecompiled();
 }

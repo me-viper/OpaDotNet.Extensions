@@ -34,7 +34,7 @@ public class OpaPolicyHandler : AuthorizationHandler<OpaPolicyRequirement>
         try
         {
             HttpRequest request;
-            
+
             if (context.Resource is HttpContext httpContext)
                 request = httpContext.Request;
             else
@@ -44,7 +44,7 @@ public class OpaPolicyHandler : AuthorizationHandler<OpaPolicyRequirement>
 
                 request = rq;
             }
-            
+
             var input = new HttpRequestPolicyInput(
                 request,
                 _options.Value.AllowedHeaders,
@@ -66,7 +66,7 @@ public class OpaPolicyHandler : AuthorizationHandler<OpaPolicyRequirement>
         {
             _logger.LogError(ex, "Authorization policy failed");
         }
-        
+
         return Task.CompletedTask;
     }
 }

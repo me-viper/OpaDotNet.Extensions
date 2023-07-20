@@ -10,34 +10,34 @@ namespace OpaDotNet.Extensions.AspNetCore;
 public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyBackgroundCompiler
 {
     private readonly IRegoCompiler _compiler;
-    
+
     private readonly ILogger _logger;
 
     private readonly ILoggerFactory _loggerFactory;
-    
+
     private readonly IOptions<OpaPolicyHandlerOptions> _options;
-    
+
     private CancellationTokenSource _changeTokenSource = new();
-    
+
     private CancellationChangeToken _changeToken;
-    
-    public OpaEvaluatorFactoryBase Factory { get; private set; }
+
+    public OpaEvaluatorFactory Factory { get; private set; }
 
     public OpaPolicyBackgroundCompiler(
-        IRegoCompiler compiler, 
-        IOptions<OpaPolicyHandlerOptions> options, 
+        IRegoCompiler compiler,
+        IOptions<OpaPolicyHandlerOptions> options,
         ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(compiler);
         ArgumentNullException.ThrowIfNull(options);
-        
+
         _compiler = compiler;
         _options = options;
         _loggerFactory = loggerFactory;
         _logger = _loggerFactory.CreateLogger<OpaPolicyBackgroundCompiler>();
         _changeToken = new(_changeTokenSource.Token);
     }
-    
+
     public IChangeToken OnRecompiled()
     {
         if (_changeTokenSource.IsCancellationRequested)
@@ -45,25 +45,27 @@ public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyBackgroundC
             _changeTokenSource = new();
             _changeToken = new(_changeTokenSource.Token);
         }
-            
+
         return _changeToken;
     }
-    
+
     private async Task CompileBundle(CancellationToken cancellationToken)
     {
         _logger.LogDebug("Compiling");
 
         try
         {
-            await using var policy = await _compiler.CompileBundle(
+            var policy = await _compiler.CompileBundle(
                 _options.Value.PolicyBundlePath,
                 cancellationToken: cancellationToken,
                 entrypoints: _options.Value.Entrypoints
-                );
+                ).ConfigureAwait(false);
+
+            await using var _ = policy.ConfigureAwait(false);
 
             Factory = new OpaBundleEvaluatorFactory(
-                policy, 
-                loggerFactory: _loggerFactory, 
+                policy,
+                loggerFactory: _loggerFactory,
                 options: _options.Value.EngineOptions
                 );
         }
@@ -78,7 +80,7 @@ public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyBackgroundC
 
     async Task IHostedService.StartAsync(CancellationToken cancellationToken)
     {
-        await CompileBundle(cancellationToken);
+        await CompileBundle(cancellationToken).ConfigureAwait(false);
     }
 
     Task IHostedService.StopAsync(CancellationToken cancellationToken)

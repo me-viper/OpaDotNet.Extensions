@@ -22,7 +22,7 @@ public record OpaPolicyRequirement : IAuthorizationRequirement
 
         if (string.IsNullOrWhiteSpace(policyName))
             return false;
-        
+
         policyName = policyName.TrimEnd('/');
 
         var prefixIndex = policyName.IndexOf(OpaPolicyAuthorizeAttribute.PolicyPrefix, StringComparison.Ordinal);
@@ -31,15 +31,15 @@ public record OpaPolicyRequirement : IAuthorizationRequirement
             return false;
 
         prefixIndex += OpaPolicyAuthorizeAttribute.PolicyPrefix.Length + 1;
-        
+
         if (prefixIndex > policyName.Length)
             return false;
-        
+
         var ep = policyName[prefixIndex..];
-        
+
         if (string.IsNullOrWhiteSpace(ep))
             return false;
-        
+
         result = new OpaPolicyRequirement(ep);
 
         return true;

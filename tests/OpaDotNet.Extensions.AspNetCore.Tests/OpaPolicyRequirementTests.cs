@@ -13,7 +13,7 @@ public class OpaPolicyRequirementTests
     public void Parse(string policy, bool expectedResult, string? entrypoint)
     {
         var result = OpaPolicyRequirement.TryParse(policy, out var opr);
-        
+
         Assert.Equal(expectedResult, result);
         Assert.Equal(entrypoint, opr?.Entrypoint);
     }

@@ -4,7 +4,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.9" />
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-    <PackageVersion Include="OpaDotNet.Wasm" Version="1.2.0-preview0009" />
+    <PackageVersion Include="OpaDotNet.Wasm" Version="1.2.0-preview0012" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageVersion Include="xunit" Version="2.4.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5">
