@@ -6,7 +6,7 @@ using OpaDotNet.Wasm;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
-internal class OpaPolicyService : IOpaPolicyService, IDisposable
+internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
 {
     private ObjectPool<IOpaEvaluator> _evaluatorPool;
 
@@ -16,15 +16,15 @@ internal class OpaPolicyService : IOpaPolicyService, IDisposable
 
     private readonly OpaEvaluatorPoolProvider _poolProvider;
 
-    private readonly IOpaPolicyBackgroundCompiler _compiler;
+    private readonly IOpaPolicyCompiler _compiler;
 
     private readonly object _syncLock = new();
 
-    public OpaPolicyService(
-        IOpaPolicyBackgroundCompiler compiler,
+    public PooledOpaPolicyService(
+        IOpaPolicyCompiler compiler,
         IOptions<OpaAuthorizationOptions> options,
         OpaEvaluatorPoolProvider poolProvider,
-        ILogger<OpaPolicyService> logger)
+        ILogger<PooledOpaPolicyService> logger)
     {
         ArgumentNullException.ThrowIfNull(compiler);
         ArgumentNullException.ThrowIfNull(options);

@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IAuthorizationPolicyProvider, OpaPolicyProvider>();
         services.TryAddSingleton<IAuthorizationHandler, OpaPolicyHandler>();
         services.TryAddSingleton<IRegoCompiler, RegoCliCompiler>();
-        services.TryAddSingleton<IOpaPolicyService, OpaPolicyService>();
+        services.TryAddSingleton<IOpaPolicyService, PooledOpaPolicyService>();
 
         return services;
     }
@@ -47,7 +47,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IAuthorizationPolicyProvider, OpaPolicyProvider>();
         services.TryAddSingleton<IAuthorizationHandler, OpaPolicyHandler>();
         services.TryAddSingleton<IRegoCompiler, RegoCliCompiler>();
-        services.TryAddSingleton<IOpaPolicyService, OpaPolicyService>();
+        services.TryAddSingleton<IOpaPolicyService, PooledOpaPolicyService>();
 
         return services;
     }

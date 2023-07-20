@@ -7,7 +7,7 @@ using OpaDotNet.Wasm.Compilation;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
-public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyBackgroundCompiler
+public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyCompiler
 {
     private readonly IRegoCompiler _compiler;
 

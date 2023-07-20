@@ -31,13 +31,13 @@ public class CompilationTests
     {
         private int _i = 0;
 
-        public ServiceStub(IOpaPolicyBackgroundCompiler compiler, ITestOutputHelper output)
+        public ServiceStub(IOpaPolicyCompiler compiler, ITestOutputHelper output)
         {
             ChangeToken.OnChange(compiler.OnRecompiled, () => output.WriteLine($"Recompiling {_i++}"));
         }
     }
 
-    private class CompilerStub : IOpaPolicyBackgroundCompiler
+    private class CompilerStub : IOpaPolicyCompiler
     {
         private CancellationTokenSource _changeTokenSource = new();
 

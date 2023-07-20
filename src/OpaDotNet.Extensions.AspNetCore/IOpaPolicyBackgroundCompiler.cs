@@ -4,7 +4,7 @@ using OpaDotNet.Wasm;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
-public interface IOpaPolicyBackgroundCompiler
+public interface IOpaPolicyCompiler
 {
     OpaEvaluatorFactory Factory { get; }
 

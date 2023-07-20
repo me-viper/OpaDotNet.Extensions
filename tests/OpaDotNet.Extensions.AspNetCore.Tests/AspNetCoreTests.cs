@@ -35,7 +35,6 @@ public class AspNetCoreTests
     }
 
     [Fact]
-    [Trait("Category", "Integration")]
     public async Task HttpRequestInput()
     {
         var server = CreateServer(
@@ -68,7 +67,6 @@ public class AspNetCoreTests
     [Theory]
     [InlineData("u1", HttpStatusCode.OK)]
     [InlineData("wrong", HttpStatusCode.Forbidden)]
-    [Trait("Category", "Integration")]
     public async Task Simple(string user, HttpStatusCode expected)
     {
         var server = CreateServer(
@@ -101,7 +99,6 @@ public class AspNetCoreTests
     [Theory]
     [InlineData("u1", HttpStatusCode.OK)]
     [InlineData("wrong", HttpStatusCode.Forbidden)]
-    [Trait("Category", "Integration")]
     public async Task ParallelSimple(string user, HttpStatusCode expected)
     {
         var server = CreateServer(
@@ -137,7 +134,6 @@ public class AspNetCoreTests
     }
 
     [Fact]
-    [Trait("Category", "Integration")]
     public async Task Jwt()
     {
         var server = CreateServer(
@@ -184,7 +180,6 @@ public class AspNetCoreTests
     }
 
     [Theory]
-    [Trait("Category", "Integration")]
     [InlineData("az/attr")]
     [InlineData("az/svc")]
     [InlineData("az/attr", "xxx", HttpStatusCode.Forbidden)]
@@ -221,7 +216,6 @@ public class AspNetCoreTests
     }
 
     [Fact]
-    [Trait("Category", "Integration")]
     public async Task Claims()
     {
         var server = CreateServer(
@@ -292,7 +286,7 @@ public class AspNetCoreTests
 
                     builder.AddSingleton<OpaPolicyBackgroundCompiler>();
                     builder.AddHostedService(p => p.GetRequiredService<OpaPolicyBackgroundCompiler>());
-                    builder.AddSingleton<IOpaPolicyBackgroundCompiler>(p => p.GetRequiredService<OpaPolicyBackgroundCompiler>());
+                    builder.AddSingleton<IOpaPolicyCompiler>(p => p.GetRequiredService<OpaPolicyBackgroundCompiler>());
 
                     builder.AddSingleton<IAuthorizationHandler, OpaPolicyHandler<UserPolicyInput>>();
 

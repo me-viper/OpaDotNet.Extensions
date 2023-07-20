@@ -84,8 +84,6 @@ internal class HttpRequestPolicyInput
 
         _request = request;
 
-        //var allowAll = includedHeaders.Any(p => string.Equals("*", p, StringComparison.Ordinal));
-
         Headers = request.Headers
             .Where(p => includedHeaders.Any(pp => Regex.IsMatch(p.Key, pp)))
             .ToDictionary(p => p.Key, p => (string?)p.Value);

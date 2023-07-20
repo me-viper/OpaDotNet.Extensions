@@ -49,11 +49,11 @@ public class OpaPolicyServiceTests
 
         await ((IHostedService)compiler).StartAsync(CancellationToken.None);
 
-        var service = new OpaPolicyService(
+        var service = new PooledOpaPolicyService(
             compiler,
             opts,
             new OpaEvaluatorPoolProvider(),
-            _loggerFactory.CreateLogger<OpaPolicyService>()
+            _loggerFactory.CreateLogger<PooledOpaPolicyService>()
             );
 
         await Parallel.ForEachAsync(

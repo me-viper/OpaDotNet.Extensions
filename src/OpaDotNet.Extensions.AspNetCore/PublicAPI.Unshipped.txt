@@ -1,7 +1,7 @@
 #nullable enable
-OpaDotNet.Extensions.AspNetCore.IOpaPolicyBackgroundCompiler
-OpaDotNet.Extensions.AspNetCore.IOpaPolicyBackgroundCompiler.Factory.get -> OpaDotNet.Wasm.OpaEvaluatorFactory!
-OpaDotNet.Extensions.AspNetCore.IOpaPolicyBackgroundCompiler.OnRecompiled() -> Microsoft.Extensions.Primitives.IChangeToken!
+OpaDotNet.Extensions.AspNetCore.IOpaPolicyCompiler
+OpaDotNet.Extensions.AspNetCore.IOpaPolicyCompiler.Factory.get -> OpaDotNet.Wasm.OpaEvaluatorFactory!
+OpaDotNet.Extensions.AspNetCore.IOpaPolicyCompiler.OnRecompiled() -> Microsoft.Extensions.Primitives.IChangeToken!
 OpaDotNet.Extensions.AspNetCore.IOpaPolicyService
 OpaDotNet.Extensions.AspNetCore.IOpaPolicyService.Evaluate<TInput, TOutput>(TInput input, string! entrypoint) -> TOutput
 OpaDotNet.Extensions.AspNetCore.IOpaPolicyService.EvaluatePredicate<TInput>(TInput input, string! entrypoint) -> bool
