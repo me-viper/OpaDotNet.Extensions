@@ -1,5 +1,5 @@
 ﻿[![CI](https://github.com/me-viper/OpaDotNet.Extensions/actions/workflows/ci.yml/badge.svg)](https://github.com/me-viper/OpaDotNet.Extensions/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/me-viper/OpaDotNet.Extensions/badge.svg?branch=develop)](https://coveralls.io/github/me-viper/OpaDotNet.Extensions?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/me-viper/OpaDotNet.Extensions/badge.svg)](https://coveralls.io/github/me-viper/OpaDotNet.Extensions)
 
 # Open Policy Agent (OPA) Extensions
 
