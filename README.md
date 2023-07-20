@@ -6,19 +6,9 @@
 This is AspNetCore and [Yarp](https://github.com/microsoft/reverse-proxy) specific extensions
 for [OpaDotNet](https://github.com/me-viper/OpaDotNet) project.
 
-## Key Features
-
 ## Getting Started
 
-### Install nuget package
-
-```sh
-dotnet add package OpaDotNet.Extensions.AspNetCore
-```
-
-### Usage
-
-Use
+See details for [AspNetCore](./src/OpaDotNet.Extensions.AspNetCore/README.md)
 
 ## 3rd Party Libraries and Contributions
 
