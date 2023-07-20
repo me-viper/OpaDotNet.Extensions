@@ -49,7 +49,7 @@ public class OpaPolicyServiceTests
 
         await ((IHostedService)compiler).StartAsync(CancellationToken.None);
 
-        var service = new PooledOpaPolicyService(
+        using var service = new PooledOpaPolicyService(
             compiler,
             opts,
             new OpaEvaluatorPoolProvider(),

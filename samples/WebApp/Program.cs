@@ -15,7 +15,7 @@ builder.Services.AddOpaAuthorization(
     {
         // Allow to pass all headers as policy query input.
         p.AllowedHeaders.Add(".*");
-        
+
         // Path where look for rego policies.
         p.PolicyBundlePath = "./Policy";
         p.EngineOptions = new()
@@ -36,7 +36,7 @@ builder.Services.AddSingleton<IOpaPolicyCompiler>(p => p.GetRequiredService<OpaP
 // In real scenarios here will be real authentication. 
 builder.Services.AddAuthentication()
     .AddScheme<AuthenticationSchemeOptions, NopAuthenticationSchemeHandler>(
-        NopAuthenticationSchemeHandler.AuthenticationSchemeName, 
+        NopAuthenticationSchemeHandler.AuthenticationSchemeName,
         null
         );
 
@@ -48,10 +48,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Will evaluate example/allow rule and return 200. 
-app.MapGet("/allow", [OpaPolicyAuthorize("example", "allow")] () => "Hi!");
+app.MapGet("/allow", [OpaPolicyAuthorize("example", "allow")]() => "Hi!");
 
 // Will evaluate example/deny rule and return 403.
-app.MapGet("/deny", [OpaPolicyAuthorize("example", "deny")] () => "Should not be here!");
+app.MapGet("/deny", [OpaPolicyAuthorize("example", "deny")]() => "Should not be here!");
 
 app.Run();
 
@@ -59,7 +59,7 @@ app.Run();
 internal class NopAuthenticationSchemeHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
     public const string AuthenticationSchemeName = "Nop";
-    
+
     public NopAuthenticationSchemeHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,

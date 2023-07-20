@@ -73,12 +73,12 @@ internal class HttpRequestPolicyInput
 
     [UsedImplicitly]
     internal record ClaimInput(string Type, string Value);
-    
+
     [UsedImplicitly]
     internal class ConnectionInput
     {
         private readonly ConnectionInfo _connection;
-        
+
         public ConnectionInput(ConnectionInfo connection)
         {
             _connection = connection;

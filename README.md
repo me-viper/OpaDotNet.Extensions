@@ -8,9 +8,9 @@ for [OpaDotNet](https://github.com/me-viper/OpaDotNet) project.
 
 ## NuGet Packages
 
-|                 | Official | Preview |
-|-----------------|----------|---------|
-| OpaDotNet.Extensions.AspNetCore | [![NuGet](https://img.shields.io/nuget/v/OpaDotNet.Extensions.AspNetCore.svg)](https://www.nuget.org/packages/OpaDotNet.Extensions.AspNetCore/) | [![Nuget](https://img.shields.io/nuget/vpre/OpaDotNet.Extensions.AspNetCore.svg)](https://www.nuget.org/packages/OpaDotNet.Extensions.AspNetCore/)  |
+|                                 | Official                                                                                                                                        | Preview                                                                                                                                            |
+|---------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| OpaDotNet.Extensions.AspNetCore | [![NuGet](https://img.shields.io/nuget/v/OpaDotNet.Extensions.AspNetCore.svg)](https://www.nuget.org/packages/OpaDotNet.Extensions.AspNetCore/) | [![Nuget](https://img.shields.io/nuget/vpre/OpaDotNet.Extensions.AspNetCore.svg)](https://www.nuget.org/packages/OpaDotNet.Extensions.AspNetCore/) |
 
 ## Getting Started
 

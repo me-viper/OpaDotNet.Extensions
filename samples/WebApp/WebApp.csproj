@@ -8,13 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\OpaDotNet.Extensions.AspNetCore\OpaDotNet.Extensions.AspNetCore.csproj" />
+        <ProjectReference Include="..\..\src\OpaDotNet.Extensions.AspNetCore\OpaDotNet.Extensions.AspNetCore.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Policy\policy.rego">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+        <None Update="Policy\policy.rego">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>

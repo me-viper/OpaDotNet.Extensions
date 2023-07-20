@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 using OpaDotNet.Extensions.AspNetCore.Tests.Common;
+using OpaDotNet.Wasm;
 
 using Xunit.Abstractions;
 
@@ -79,7 +80,8 @@ public class AspNetCoreTests
 
                 if (!result.Succeeded)
                     context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-            }
+            },
+            configureServices: p => p.AddSingleton<IAuthorizationHandler, OpaPolicyHandler<UserPolicyInput>>()
             );
 
         var request = new HttpRequestMessage(HttpMethod.Get, $"{server.BaseAddress}");
@@ -111,7 +113,8 @@ public class AspNetCoreTests
 
                 if (!result.Succeeded)
                     context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-            }
+            },
+            configureServices: p => p.AddSingleton<IAuthorizationHandler, OpaPolicyHandler<UserPolicyInput>>()
             );
 
         async Task DoSimple()
@@ -254,7 +257,83 @@ public class AspNetCoreTests
         Assert.Equal(HttpStatusCode.OK, transaction.Response.StatusCode);
     }
 
+    [Theory]
+    [InlineData("u1", HttpStatusCode.OK)]
+    [InlineData("u2", HttpStatusCode.Forbidden)]
+    public async Task Composite(string user, HttpStatusCode expected)
+    {
+        var server = CreateServer(
+            _output,
+            handler: async (context, _) =>
+            {
+                var azs = context.RequestServices.GetRequiredService<IAuthorizationService>();
+
+                var result = await azs.AuthorizeAsync(context.User, new UserPolicyInput(user), "Opa/complex");
+
+                if (!result.Succeeded)
+                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+            },
+            configureServices: p => p.AddSingleton<IAuthorizationHandler, ComplexAuthorizationHandler>()
+            );
+
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{server.BaseAddress}");
+
+        var transaction = new Transaction
+        {
+            Request = request,
+            Response = await server.CreateClient().SendAsync(request),
+        };
+
+        transaction.ResponseText = await transaction.Response.Content.ReadAsStringAsync();
+
+        Assert.NotNull(transaction.Response);
+        Assert.Equal(expected, transaction.Response.StatusCode);
+    }
+
     private record UserPolicyInput([UsedImplicitly] string User);
+
+    [UsedImplicitly]
+    private record UserAccessPolicyOutput
+    {
+        public bool Access { get; [UsedImplicitly] set; }
+
+        public bool Admin { get; [UsedImplicitly] set; }
+    }
+
+    private class ComplexAuthorizationHandler : AuthorizationHandler<OpaPolicyRequirement, UserPolicyInput>
+    {
+        private readonly IOpaPolicyService _service;
+        private readonly IOptions<OpaAuthorizationOptions> _options;
+
+        public ComplexAuthorizationHandler(IOpaPolicyService service, IOptions<OpaAuthorizationOptions> options)
+        {
+            _service = service;
+            _options = options;
+        }
+
+        protected override Task HandleRequirementAsync(
+            AuthorizationHandlerContext context,
+            OpaPolicyRequirement requirement,
+            UserPolicyInput resource)
+        {
+            var result1 = _service.Evaluate<UserPolicyInput, UserAccessPolicyOutput>(resource, requirement.Entrypoint);
+
+            if (result1 is not { Access: true, Admin: true })
+                return Task.CompletedTask;
+
+            var inputRaw = JsonSerializer.Serialize(resource, _options.Value.EngineOptions?.SerializationOptions);
+            var result2Raw = _service.EvaluateRaw(inputRaw, requirement.Entrypoint);
+            var result2 = JsonSerializer.Deserialize<PolicyEvaluationResult<UserAccessPolicyOutput>[]>(
+                result2Raw,
+                _options.Value.EngineOptions?.SerializationOptions
+                );
+
+            if (result2![0].Result is { Access: true, Admin: true })
+                context.Succeed(requirement);
+
+            return Task.CompletedTask;
+        }
+    }
 
     private static TestServer CreateServer(
         ITestOutputHelper output,
@@ -287,8 +366,6 @@ public class AspNetCoreTests
                     builder.AddSingleton<OpaPolicyBackgroundCompiler>();
                     builder.AddHostedService(p => p.GetRequiredService<OpaPolicyBackgroundCompiler>());
                     builder.AddSingleton<IOpaPolicyCompiler>(p => p.GetRequiredService<OpaPolicyBackgroundCompiler>());
-
-                    builder.AddSingleton<IAuthorizationHandler, OpaPolicyHandler<UserPolicyInput>>();
 
                     if (handler == null)
                         builder.AddRouting();
