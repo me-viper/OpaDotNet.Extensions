@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
 using JetBrains.Annotations;
 
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
+using OpaDotNet.Wasm;
 using OpaDotNet.Wasm.Compilation;
 
 namespace OpaDotNet.Extensions.AspNetCore;
@@ -14,6 +16,25 @@ namespace OpaDotNet.Extensions.AspNetCore;
 [ExcludeFromCodeCoverage]
 public static class ServiceCollectionExtensions
 {
+    public static IOpaAuthorizationBuilder AddJsonOptions(
+        this IOpaAuthorizationBuilder builder,
+        Action<JsonSerializerOptions> jsonOptions)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(jsonOptions);
+        
+        builder.Services
+            .AddOptions<OpaAuthorizationOptions>()
+            .PostConfigure(
+                p =>
+                {
+                    p.EngineOptions ??= WasmPolicyEngineOptions.Default;
+                    jsonOptions.Invoke(p.EngineOptions.SerializationOptions);
+                });
+        
+        return builder;
+    }
+    
     public static IOpaAuthorizationBuilder AddConfiguration(
         this IOpaAuthorizationBuilder builder,
         IConfiguration configuration)
@@ -22,7 +43,6 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configuration);
 
         builder.Services.Configure<OpaAuthorizationOptions>(configuration);
-
         return builder;
     }
 
