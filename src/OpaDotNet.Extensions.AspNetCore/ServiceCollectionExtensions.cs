@@ -10,22 +10,6 @@ using OpaDotNet.Wasm.Compilation;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
-public interface IOpaAuthorizationBuilder
-{
-    IServiceCollection Services { get; }
-}
-
-internal sealed class OpaAuthorizationBuilder : IOpaAuthorizationBuilder
-{
-    public IServiceCollection Services { get; }
-
-    public OpaAuthorizationBuilder(IServiceCollection services)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-        Services = services;
-    }
-}
-
 [PublicAPI]
 [ExcludeFromCodeCoverage]
 public static class ServiceCollectionExtensions

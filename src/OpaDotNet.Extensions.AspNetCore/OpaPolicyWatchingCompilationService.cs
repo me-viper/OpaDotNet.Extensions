@@ -101,7 +101,7 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
         _cancellationTokenSource.Dispose();
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public override async Task StartAsync(CancellationToken cancellationToken)
     {
         await base.StartAsync(cancellationToken).ConfigureAwait(false);
 
@@ -109,7 +109,7 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
         _ = Task.Run(() => TrackPolicyChanged(_cancellationTokenSource.Token), _cancellationTokenSource.Token);
     }
 
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public override async Task StopAsync(CancellationToken cancellationToken)
     {
         await base.StopAsync(cancellationToken).ConfigureAwait(false);
 
