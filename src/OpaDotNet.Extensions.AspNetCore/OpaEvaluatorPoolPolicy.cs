@@ -4,7 +4,7 @@ using OpaDotNet.Wasm;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
-public class OpaEvaluatorPoolPolicy : PooledObjectPolicy<IOpaEvaluator>
+internal class OpaEvaluatorPoolPolicy : PooledObjectPolicy<IOpaEvaluator>
 {
     private readonly Func<IOpaEvaluator> _factory;
 

@@ -14,8 +14,6 @@ OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.MonitoringInterval.get -
 OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.MonitoringInterval.set -> void
 OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.OpaAuthorizationOptions() -> void
 OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.PolicyBundlePath.get -> string?
-OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolPolicy
-OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolPolicy.OpaEvaluatorPoolPolicy(System.Func<OpaDotNet.Wasm.IOpaEvaluator!>! factory) -> void
 OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolProvider
 OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolProvider.OpaEvaluatorPoolProvider() -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyAuthorizeAttribute
@@ -51,8 +49,6 @@ OpaDotNet.Extensions.AspNetCore.OpaPolicyWatchingCompilationService
 OpaDotNet.Extensions.AspNetCore.OpaPolicyWatchingCompilationService.Dispose() -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyWatchingCompilationService.OpaPolicyWatchingCompilationService(OpaDotNet.Extensions.AspNetCore.IOpaPolicyCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! options, Microsoft.Extensions.Logging.ILogger<OpaDotNet.Extensions.AspNetCore.OpaPolicyWatchingCompilationService!>! logger) -> void
 OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions
-override OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolPolicy.Create() -> OpaDotNet.Wasm.IOpaEvaluator!
-override OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolPolicy.Return(OpaDotNet.Wasm.IOpaEvaluator! obj) -> bool
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement) -> System.Threading.Tasks.Task!
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement, TResource resource) -> System.Threading.Tasks.Task!
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.ToString() -> string!
