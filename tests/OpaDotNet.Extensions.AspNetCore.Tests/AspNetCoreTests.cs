@@ -17,10 +17,12 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 
 using OpaDotNet.Extensions.AspNetCore.Tests.Common;
 using OpaDotNet.Wasm;
+using OpaDotNet.Wasm.Compilation;
 
 using Xunit.Abstractions;
 
@@ -82,6 +84,82 @@ public class AspNetCoreTests
                     context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
             },
             configureServices: p => p.AddSingleton<IAuthorizationHandler, OpaPolicyHandler<UserPolicyInput>>()
+            );
+
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{server.BaseAddress}");
+
+        var transaction = new Transaction
+        {
+            Request = request,
+            Response = await server.CreateClient().SendAsync(request),
+        };
+
+        transaction.ResponseText = await transaction.Response.Content.ReadAsStringAsync();
+
+        Assert.NotNull(transaction.Response);
+        Assert.Equal(expected, transaction.Response.StatusCode);
+    }
+
+    private record TestEvaluatorFactoryProvider(OpaEvaluatorFactory Factory) : IOpaEvaluatorFactoryProvider
+    {
+        private readonly CancellationChangeToken _cct = new(CancellationToken.None);
+
+        public void Dispose() => Factory.Dispose();
+
+        public IChangeToken OnPolicyUpdated() => _cct;
+    }
+
+    [Theory]
+    [InlineData("u1", HttpStatusCode.OK)]
+    [InlineData("wrong", HttpStatusCode.Forbidden)]
+    public async Task SimpleNoCompilation(string user, HttpStatusCode expected)
+    {
+        var compiler = new RegoCliCompiler();
+        var policy = await compiler.CompileBundle("./Policy");
+
+        var opts = new WasmPolicyEngineOptions
+        {
+            SerializationOptions = new()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            },
+        };
+
+        var factory = new TestEvaluatorFactoryProvider(new OpaBundleEvaluatorFactory(policy, opts));
+
+        var server = CreateServerFull(
+            _output,
+            handler: async (context, _) =>
+            {
+                var azs = context.RequestServices.GetRequiredService<IAuthorizationService>();
+
+                var result = await azs.AuthorizeAsync(context.User, new UserPolicyInput(user), "Opa/az/user");
+
+                if (!result.Succeeded)
+                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+            },
+            configureServices: p =>
+            {
+                p.AddLogging(p => p.AddXunit(_output).AddFilter(pp => pp > LogLevel.Trace));
+                p.AddSingleton<IAuthorizationHandler, OpaPolicyHandler<UserPolicyInput>>();
+
+                p.AddOpaAuthorization(
+                    cfg =>
+                    {
+                        cfg.AddEvaluatorFactory(_ => factory);
+                        cfg.AddConfiguration(
+                            pp =>
+                            {
+                                pp.AllowedHeaders.Add(".*");
+                                pp.EngineOptions = opts;
+                            }
+                            );
+                    }
+                    );
+
+                p.AddAuthentication().AddScheme<AuthenticationSchemeOptions, TestAuthenticationSchemeHandler>("Test", null);
+                p.AddAuthorization();
+            }
             );
 
         var request = new HttpRequestMessage(HttpMethod.Get, $"{server.BaseAddress}");
@@ -335,6 +413,32 @@ public class AspNetCoreTests
         }
     }
 
+    private static TestServer CreateServerFull(
+        ITestOutputHelper output,
+        Func<HttpContext, Func<Task>, Task> handler,
+        Action<IServiceCollection> configureServices,
+        Uri? baseAddress = null)
+    {
+        var builder = new WebHostBuilder()
+            .ConfigureServices(configureServices)
+            .Configure(
+                app =>
+                {
+                    app.UseAuthentication();
+                    app.UseAuthorization();
+
+                    app.Use(handler);
+                }
+                );
+
+        var server = new TestServer(builder);
+
+        if (baseAddress != null)
+            server.BaseAddress = baseAddress;
+
+        return server;
+    }
+
     private static TestServer CreateServer(
         ITestOutputHelper output,
         Func<HttpContext, Func<Task>, Task>? handler = null,
@@ -348,24 +452,28 @@ public class AspNetCoreTests
                     builder.AddLogging(p => p.AddXunit(output).AddFilter(pp => pp > LogLevel.Trace));
 
                     builder.AddOpaAuthorization(
-                        p =>
+                        cfg =>
                         {
-                            p.PolicyBundlePath = "./Policy";
-                            p.AllowedHeaders.Add(".*");
-                            p.IncludeClaimsInHttpRequest = true;
-                            p.EngineOptions = new()
-                            {
-                                SerializationOptions = new()
+                            cfg.AddDefaultCompiler();
+                            cfg.AddConfiguration(
+                                p =>
                                 {
-                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                },
-                            };
+                                    p.PolicyBundlePath = "./Policy";
+                                    p.AllowedHeaders.Add(".*");
+                                    p.IncludeClaimsInHttpRequest = true;
+                                    p.EngineOptions = new()
+                                    {
+                                        SerializationOptions = new()
+                                        {
+                                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                                        },
+                                    };
+                                }
+                                );
                         }
                         );
 
-                    builder.AddSingleton<OpaPolicyBackgroundCompiler>();
-                    builder.AddHostedService(p => p.GetRequiredService<OpaPolicyBackgroundCompiler>());
-                    builder.AddSingleton<IOpaPolicyCompiler>(p => p.GetRequiredService<OpaPolicyBackgroundCompiler>());
+                    builder.AddHostedService<OpaPolicyCompilationService>();
 
                     if (handler == null)
                         builder.AddRouting();

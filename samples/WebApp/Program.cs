@@ -11,29 +11,36 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Register core services.
 builder.Services.AddOpaAuthorization(
-    p =>
+    cfg =>
     {
-        // Allow to pass all headers as policy query input.
-        p.AllowedHeaders.Add(".*");
+        // Register default compiler.
+        cfg.AddDefaultCompiler();
 
-        // Path where look for rego policies.
-        p.PolicyBundlePath = "./Policy";
-        p.EngineOptions = new()
-        {
-            SerializationOptions = new()
+        // Configure.
+        cfg.AddConfiguration(
+            p =>
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            },
-        };
+                // Allow to pass all headers as policy query input.
+                p.AllowedHeaders.Add(".*");
+
+                // Path where look for rego policies.
+                p.PolicyBundlePath = "./Policy";
+                p.EngineOptions = new()
+                {
+                    SerializationOptions = new()
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    },
+                };
+            }
+            );
     }
     );
 
-// Register compiler.
-builder.Services.AddSingleton<OpaPolicyBackgroundCompiler>();
-builder.Services.AddHostedService(p => p.GetRequiredService<OpaPolicyBackgroundCompiler>());
-builder.Services.AddSingleton<IOpaPolicyCompiler>(p => p.GetRequiredService<OpaPolicyBackgroundCompiler>());
+// OpaPolicyWatchingCompilationService will do initial compilation on startup and will watch changes.
+builder.Services.AddHostedService<OpaPolicyWatchingCompilationService>();
 
-// In real scenarios here will be real authentication. 
+// In real scenarios here will be more sophisticated authentication. 
 builder.Services.AddAuthentication()
     .AddScheme<AuthenticationSchemeOptions, NopAuthenticationSchemeHandler>(
         NopAuthenticationSchemeHandler.AuthenticationSchemeName,

@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -41,13 +40,13 @@ public class OpaPolicyServiceTests
             }
             );
 
-        var compiler = new OpaPolicyBackgroundCompiler(
+        var compiler = new OpaPolicyCompiler(
             new RegoCliCompiler(),
             opts,
             _loggerFactory
             );
 
-        await ((IHostedService)compiler).StartAsync(CancellationToken.None);
+        await compiler.CompileBundle(false, CancellationToken.None);
 
         using var service = new PooledOpaPolicyService(
             compiler,

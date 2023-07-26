@@ -19,7 +19,7 @@ public class OpaAuthorizationOptions
     public bool IncludeClaimsInHttpRequest { get; set; }
 
     [UsedImplicitly]
-    public string PolicyBundlePath { get; set; } = default!;
+    public string? PolicyBundlePath { get; set; }
 
     [UsedImplicitly]
     public HashSet<string>? Entrypoints { get; set; }
@@ -29,4 +29,7 @@ public class OpaAuthorizationOptions
 
     [UsedImplicitly]
     public int MaximumEvaluatorsRetained { get; set; } = Environment.ProcessorCount * 2;
+
+    [UsedImplicitly]
+    public TimeSpan MonitoringInterval { get; set; } = TimeSpan.Zero;
 }

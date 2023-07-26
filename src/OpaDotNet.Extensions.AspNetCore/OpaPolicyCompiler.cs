@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
 using OpaDotNet.Wasm;
@@ -7,15 +6,11 @@ using OpaDotNet.Wasm.Compilation;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
-public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyCompiler
+internal sealed class OpaPolicyCompiler : IOpaPolicyCompiler
 {
     private readonly IRegoCompiler _compiler;
 
     private readonly ILogger _logger;
-
-    private readonly ILoggerFactory _loggerFactory;
-
-    private readonly IOptions<OpaAuthorizationOptions> _options;
 
     private CancellationTokenSource _changeTokenSource = new();
 
@@ -23,24 +18,43 @@ public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyCompiler
 
     private readonly SemaphoreSlim _lock = new(1, 1);
 
-    public OpaEvaluatorFactory Factory { get; private set; } = default!;
+    private readonly ILoggerFactory _loggerFactory;
 
-    public OpaPolicyBackgroundCompiler(
+    private readonly IOptions<OpaAuthorizationOptions> _options;
+
+    private OpaEvaluatorFactory? _factory;
+
+    public OpaEvaluatorFactory Factory
+    {
+        get
+        {
+            if (_factory == null)
+                throw new InvalidOperationException("Evaluator factory have not been initialized");
+
+            return _factory;
+        }
+    }
+
+    public OpaPolicyCompiler(
         IRegoCompiler compiler,
         IOptions<OpaAuthorizationOptions> options,
         ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(compiler);
         ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _compiler = compiler;
         _options = options;
         _loggerFactory = loggerFactory;
-        _logger = _loggerFactory.CreateLogger<OpaPolicyBackgroundCompiler>();
+        _logger = _loggerFactory.CreateLogger<OpaPolicyCompilationService>();
         _changeToken = new(_changeTokenSource.Token);
+
+        if (string.IsNullOrWhiteSpace(options.Value.PolicyBundlePath))
+            throw new InvalidOperationException("Compiler requires OpaAuthorizationOptions.PolicyBundlePath specified");
     }
 
-    public IChangeToken OnRecompiled()
+    public IChangeToken OnPolicyUpdated()
     {
         if (_changeTokenSource.IsCancellationRequested)
         {
@@ -51,7 +65,7 @@ public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyCompiler
         return _changeToken;
     }
 
-    public async Task CompileBundle(bool recompiling, CancellationToken cancellationToken)
+    public async Task CompileBundle(bool recompiling, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Compiling");
 
@@ -60,14 +74,14 @@ public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyCompiler
             await _lock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             var policy = await _compiler.CompileBundle(
-                _options.Value.PolicyBundlePath,
+                _options.Value.PolicyBundlePath!,
                 cancellationToken: cancellationToken,
                 entrypoints: _options.Value.Entrypoints
                 ).ConfigureAwait(false);
 
             await using var _ = policy.ConfigureAwait(false);
 
-            Factory = new OpaBundleEvaluatorFactory(
+            _factory = new OpaBundleEvaluatorFactory(
                 policy,
                 loggerFactory: _loggerFactory,
                 options: _options.Value.EngineOptions
@@ -92,13 +106,10 @@ public class OpaPolicyBackgroundCompiler : IHostedService, IOpaPolicyCompiler
         _logger.LogDebug("Compilation succeeded");
     }
 
-    async Task IHostedService.StartAsync(CancellationToken cancellationToken)
+    public void Dispose()
     {
-        await CompileBundle(false, cancellationToken).ConfigureAwait(false);
-    }
-
-    Task IHostedService.StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
+        _factory?.Dispose();
+        _lock.Dispose();
+        _changeTokenSource.Dispose();
     }
 }

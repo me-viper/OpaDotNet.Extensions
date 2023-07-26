@@ -4,9 +4,9 @@ using OpaDotNet.Wasm;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
-public interface IOpaPolicyCompiler
+public interface IOpaEvaluatorFactoryProvider : IDisposable
 {
     OpaEvaluatorFactory Factory { get; }
 
-    IChangeToken OnRecompiled();
+    IChangeToken OnPolicyUpdated();
 }
