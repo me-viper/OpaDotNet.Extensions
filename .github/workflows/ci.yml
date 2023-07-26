@@ -43,5 +43,5 @@ jobs:
     - name: Coveralls
       uses: coverallsapp/github-action@v2
       with:
-        files: ./tests/OpaDotNet.Extensions.AspNetCore.Tests/TestResults/coverage.info ./tests/OpaDotNet.Extensions.Yarp.Tests/TestResults/coverage.info
+        files: ./tests/OpaDotNet.Extensions.AspNetCore.Tests/TestResults/coverage.info
         format: lcov
