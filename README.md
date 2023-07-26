@@ -132,6 +132,11 @@ internal class NopAuthenticationSchemeHandler : AuthenticationHandler<Authentica
 }
 ```
 
+## Samples
+
+* [AspNetCore](./samples/WebApp/)
+* [Yarp](./samples/YarpApp/)
+
 ## 3rd Party Libraries and Contributions
 
 * [xUnit.net](https://xunit.net/) - Free, open source, community-focused unit testing tool for the .NET Framework.
