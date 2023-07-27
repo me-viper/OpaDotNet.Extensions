@@ -3,6 +3,8 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
 using OpaDotNet.Extensions.AspNetCore;
@@ -37,8 +39,11 @@ builder.Services.AddOpaAuthorization(
     }
     );
 
+// Handler with custom policy input.
+builder.Services.AddSingleton<IAuthorizationHandler, OpaPolicyHandler<ResourcePolicyInput>>();
+
 // OpaPolicyWatchingCompilationService will do initial compilation on startup and will watch changes.
-builder.Services.AddHostedService<OpaPolicyWatchingCompilationService>();
+builder.Services.AddHostedService<OpaPolicyCompilationService>();
 
 // In real scenarios here will be more sophisticated authentication. 
 builder.Services.AddAuthentication()
@@ -57,11 +62,28 @@ app.UseAuthorization();
 // Will evaluate example/allow rule and return 200. 
 app.MapGet("/allow", [OpaPolicyAuthorize("example", "allow")]() => "Hi!");
 
-// Will evaluate example/deny rule and return 403.
-app.MapGet("/deny", [OpaPolicyAuthorize("example", "deny")]() => "Should not be here!");
+// Will evaluate example/deny rule with IAuthorizationService and return 403.
+app.MapGet(
+    "/deny",
+    ([FromServices] IAuthorizationService azs, HttpContext context, ClaimsPrincipal user) =>
+    {
+        var result = azs.AuthorizeAsync(user, context, "opa/example/deny");
+        return result.Result.Succeeded ? Results.Ok("Should not be here!") : Results.Forbid();
+    }
+    );
+
+// Will evaluate example/check_resource policy end return 200 if resource == allowed; 403 otherwise.
+app.MapGet(
+    "/resource/{name}", ([FromServices] IAuthorizationService azs, ClaimsPrincipal user, string name) =>
+    {
+        var result = azs.AuthorizeAsync(user, new ResourcePolicyInput(name), "opa/example/check_resource");
+        return result.Result.Succeeded ? Results.Ok($"Got access to {name}") : Results.Forbid();
+    }
+    );
 
 app.Run();
 
+internal record ResourcePolicyInput(string Resource);
 
 internal class NopAuthenticationSchemeHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {

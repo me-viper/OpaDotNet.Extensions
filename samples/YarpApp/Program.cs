@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
 using OpaDotNet.Extensions.AspNetCore;
+using OpaDotNet.Wasm.Compilation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,15 @@ builder.Services
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 var app = builder.Build();
+
+// Ensure build path exists.
+var buildPath = app.Services.GetService<IOptions<RegoCliCompilerOptions>>()?.Value.OutputPath;
+
+if (!string.IsNullOrWhiteSpace(buildPath))
+{
+    if (!Directory.Exists(buildPath))
+        Directory.CreateDirectory(buildPath);
+}
 
 app.UseRouting();
 

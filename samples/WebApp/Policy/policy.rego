@@ -13,3 +13,9 @@ allow if {
 deny if {
     false
 }
+
+# METADATA
+# entrypoint: true
+check_resource if {
+    input.resource == "allowed"
+}
