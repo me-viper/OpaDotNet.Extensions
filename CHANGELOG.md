@@ -1,13 +1,13 @@
 # Changelog
 
-## OpaDotNet.Extensions v1.0.2 (2023-07-27)
+## OpaDotNet.Extensions v1.0.3 (2023-07-27)
 
 ### Features
 
 * Improve policy sources change tracking
 * Update OpaDotNet.Wasm to v1.2.1
 
-## OpaDotNet.Extensions v1.0.1 (2023-07-25)
+## OpaDotNet.Extensions v1.0.2 (2023-07-25)
 
 ### Features
 
