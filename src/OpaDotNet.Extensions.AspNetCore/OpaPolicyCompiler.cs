@@ -12,6 +12,7 @@ internal sealed class OpaPolicyCompiler : IOpaPolicyCompiler
 
     private readonly ILogger _logger;
 
+    // Has nothing to do with cancellation really but used to notify about recompilation.
     private CancellationTokenSource _changeTokenSource = new();
 
     private CancellationChangeToken _changeToken;

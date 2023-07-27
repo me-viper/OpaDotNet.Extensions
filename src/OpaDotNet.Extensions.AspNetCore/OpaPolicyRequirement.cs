@@ -4,6 +4,9 @@ using JetBrains.Annotations;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
+/// <summary>
+/// Represents OPA policy requirement.
+/// </summary>
 public record OpaPolicyRequirement : IAuthorizationRequirement
 {
     [PublicAPI]
@@ -19,6 +22,12 @@ public record OpaPolicyRequirement : IAuthorizationRequirement
     /// </summary>
     public string Entrypoint { get; }
 
+    /// <summary>
+    /// Tries to build <see cref="OpaPolicyRequirement"/> from policy name.
+    /// </summary>
+    /// <param name="policyName">OPA policy name in format Opa/[module]/?[entrypoint]</param>
+    /// <param name="result">Parsed OPA policy requirement</param>
+    /// <returns><c>true</c> if <see cref="policyName"/> represents OPA policy, otherwise <c>false</c></returns>
     internal static bool TryParse(string policyName, [MaybeNullWhen(false)] out OpaPolicyRequirement result)
     {
         result = null;
@@ -28,7 +37,7 @@ public record OpaPolicyRequirement : IAuthorizationRequirement
 
         policyName = policyName.TrimEnd('/');
 
-        var prefixIndex = policyName.IndexOf(OpaPolicyAuthorizeAttribute.PolicyPrefix, StringComparison.Ordinal);
+        var prefixIndex = policyName.IndexOf(OpaPolicyAuthorizeAttribute.PolicyPrefix, StringComparison.OrdinalIgnoreCase);
 
         if (prefixIndex < 0)
             return false;

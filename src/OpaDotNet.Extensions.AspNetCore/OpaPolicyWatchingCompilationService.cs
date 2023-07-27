@@ -4,6 +4,10 @@ using Microsoft.Extensions.Options;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
+/// <summary>
+/// Performs initial policy bundle compilation on startup and monitors policy source directory for changes.
+/// If policy sources change triggers bundle recompilation.
+/// </summary>
 [PublicAPI]
 public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationService, IDisposable
 {
@@ -90,6 +94,7 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
         _logger.LogDebug("Stopped watching for policy changes");
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         _changesMonitor.Dispose();
@@ -97,6 +102,7 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
         _cancellationTokenSource.Dispose();
     }
 
+    /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         await base.StartAsync(cancellationToken).ConfigureAwait(false);
@@ -105,6 +111,7 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
         _ = Task.Run(() => TrackPolicyChanged(_cancellationTokenSource.Token), cancellationToken);
     }
 
+    /// <inheritdoc/>
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         await base.StopAsync(cancellationToken).ConfigureAwait(false);

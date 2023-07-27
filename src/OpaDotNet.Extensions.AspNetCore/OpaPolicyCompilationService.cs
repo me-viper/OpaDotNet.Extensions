@@ -4,6 +4,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
+/// <summary>
+/// Performs initial policy bundle compilation on startup.
+/// </summary>
 [PublicAPI]
 public class OpaPolicyCompilationService : IHostedService
 {
@@ -15,11 +18,13 @@ public class OpaPolicyCompilationService : IHostedService
         Compiler = compiler;
     }
 
+    /// <inheritdoc/>
     public virtual async Task StartAsync(CancellationToken cancellationToken)
     {
         await Compiler.CompileBundle(false, cancellationToken).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
     public virtual Task StopAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
