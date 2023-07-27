@@ -12,8 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpaAuthorization(
     cfg =>
     {
-        cfg.AddDefaultCompiler();
-        cfg.AddConfiguration(builder.Configuration.GetSection("Opa"));
+        cfg.AddDefaultCompiler(builder.Configuration.GetSection("Compiler").Bind);
+        cfg.AddConfiguration(builder.Configuration.GetSection("Opa").Bind);
         cfg.AddJsonOptions(p => p.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
     }
     );

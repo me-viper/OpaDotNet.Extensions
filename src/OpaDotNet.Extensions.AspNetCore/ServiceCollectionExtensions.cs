@@ -34,17 +34,6 @@ public static class ServiceCollectionExtensions
         
         return builder;
     }
-    
-    public static IOpaAuthorizationBuilder AddConfiguration(
-        this IOpaAuthorizationBuilder builder,
-        IConfiguration configuration)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(configuration);
-
-        builder.Services.Configure<OpaAuthorizationOptions>(configuration);
-        return builder;
-    }
 
     public static IOpaAuthorizationBuilder AddConfiguration(
         this IOpaAuthorizationBuilder builder,
@@ -69,31 +58,31 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    public static IOpaAuthorizationBuilder AddDefaultCompiler(this IOpaAuthorizationBuilder builder)
+    public static IOpaAuthorizationBuilder AddDefaultCompiler(
+        this IOpaAuthorizationBuilder builder,
+        Action<RegoCliCompilerOptions>? configureCompiler = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        return builder.AddCompiler<OpaPolicyCompiler>();
+        return builder.AddCompiler<OpaPolicyCompiler>(configureCompiler: configureCompiler);
     }
 
     public static IOpaAuthorizationBuilder AddCompiler<T>(
         this IOpaAuthorizationBuilder builder,
-        Func<IServiceProvider, T> compiler) where T : class, IOpaPolicyCompiler
+        Func<IServiceProvider, T>? buildCompiler = null,
+        Action<RegoCliCompilerOptions>? configureCompiler = null) where T : class, IOpaPolicyCompiler
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Services.TryAddSingleton<IOpaPolicyCompiler>(compiler);
+        if (buildCompiler == null)
+            builder.Services.TryAddSingleton<IOpaPolicyCompiler, T>();
+            
+        else
+            builder.Services.TryAddSingleton<IOpaPolicyCompiler>(buildCompiler);
+        
         builder.Services.TryAddSingleton<IOpaEvaluatorFactoryProvider>(p => p.GetRequiredService<IOpaPolicyCompiler>());
-
-        return builder;
-    }
-
-    public static IOpaAuthorizationBuilder AddCompiler<T>(this IOpaAuthorizationBuilder builder)
-        where T : class, IOpaPolicyCompiler
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        builder.Services.TryAddSingleton<IOpaPolicyCompiler, T>();
-        builder.Services.TryAddSingleton<IOpaEvaluatorFactoryProvider>(p => p.GetRequiredService<IOpaPolicyCompiler>());
+        
+        if (configureCompiler != null)
+            builder.Services.Configure(configureCompiler);
 
         return builder;
     }
