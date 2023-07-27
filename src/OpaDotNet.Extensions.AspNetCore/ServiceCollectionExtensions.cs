@@ -3,7 +3,6 @@ using System.Text.Json;
 
 using JetBrains.Annotations;
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -22,7 +21,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(jsonOptions);
-        
+
         builder.Services
             .AddOptions<OpaAuthorizationOptions>()
             .PostConfigure(
@@ -30,8 +29,9 @@ public static class ServiceCollectionExtensions
                 {
                     p.EngineOptions ??= WasmPolicyEngineOptions.Default;
                     jsonOptions.Invoke(p.EngineOptions.SerializationOptions);
-                });
-        
+                }
+                );
+
         return builder;
     }
 
@@ -75,12 +75,12 @@ public static class ServiceCollectionExtensions
 
         if (buildCompiler == null)
             builder.Services.TryAddSingleton<IOpaPolicyCompiler, T>();
-            
+
         else
             builder.Services.TryAddSingleton<IOpaPolicyCompiler>(buildCompiler);
-        
+
         builder.Services.TryAddSingleton<IOpaEvaluatorFactoryProvider>(p => p.GetRequiredService<IOpaPolicyCompiler>());
-        
+
         if (configureCompiler != null)
             builder.Services.Configure(configureCompiler);
 
