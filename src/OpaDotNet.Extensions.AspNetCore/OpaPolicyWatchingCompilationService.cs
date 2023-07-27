@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 using Microsoft.Extensions.Options;
 
@@ -13,13 +11,13 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
 
     private readonly FileSystemWatcher _policyWatcher;
 
-    private readonly ConcurrentBag<string> _changes = new();
-
     private readonly PeriodicTimer _changesMonitor;
 
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
     private readonly IOptions<OpaAuthorizationOptions> _options;
+
+    private bool _needsRecompilation;
 
     public OpaPolicyWatchingCompilationService(
         IOpaPolicyCompiler compiler,
@@ -39,7 +37,7 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
         _policyWatcher = new()
         {
             Path = _options.Value.PolicyBundlePath!,
-            Filters = { "*.rego", "data.json" },
+            Filters = { "*.rego", "data.json", "data.yaml" },
             NotifyFilter = NotifyFilters.LastWrite,
             IncludeSubdirectories = true,
         };
@@ -50,19 +48,16 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
 
     private void PolicyChanged(object sender, FileSystemEventArgs e)
     {
-        if (e.ChangeType != WatcherChangeTypes.Changed)
-            return;
-
-        var changedFile = new FileInfo(e.FullPath);
-
-        if (!changedFile.Exists)
-            return;
-
         if (_cancellationTokenSource.Token.IsCancellationRequested)
             return;
 
-        _logger.LogDebug("Detected policy change in {File}. Stashing until next recompilation cycle", e.FullPath);
-        _changes.Add(changedFile.FullName);
+        _logger.LogDebug(
+            "Detected policy change {Change} in {File}. Stashing until next recompilation cycle",
+            e.ChangeType,
+            e.FullPath
+            );
+
+        _needsRecompilation = true;
     }
 
     private async Task TrackPolicyChanged(CancellationToken cancellationToken)
@@ -73,21 +68,22 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
         {
             try
             {
-                if (_changes.IsEmpty)
+                if (!_needsRecompilation)
                     continue;
 
                 if (cancellationToken.IsCancellationRequested)
                     break;
 
+                _needsRecompilation = false;
+
                 _logger.LogDebug("Detected changes. Recompiling");
                 await Compiler.CompileBundle(true, cancellationToken).ConfigureAwait(false);
                 _logger.LogDebug("Recompilation succeeded");
-
-                _changes.Clear();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to process policy changes");
+                _needsRecompilation = true;
             }
         }
 
@@ -106,7 +102,7 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
         await base.StartAsync(cancellationToken).ConfigureAwait(false);
 
         _policyWatcher.EnableRaisingEvents = true;
-        _ = Task.Run(() => TrackPolicyChanged(_cancellationTokenSource.Token), _cancellationTokenSource.Token);
+        _ = Task.Run(() => TrackPolicyChanged(_cancellationTokenSource.Token), cancellationToken);
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
