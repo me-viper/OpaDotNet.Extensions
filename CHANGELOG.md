@@ -1,5 +1,11 @@
 # Changelog
 
+## OpaDotNet.Extensions v1.0.4 (2023-08-16)
+
+### Features
+
+* Update OpaDotNet.Wasm to v1.4.0
+
 ## OpaDotNet.Extensions v1.0.3 (2023-07-27)
 
 ### Features
