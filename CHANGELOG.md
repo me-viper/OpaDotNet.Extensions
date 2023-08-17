@@ -1,5 +1,11 @@
 # Changelog
 
+## OpaDotNet.Extensions v1.0.5 (2023-08-17)
+
+### Features
+
+* Fix nuget package health warnings
+
 ## OpaDotNet.Extensions v1.0.4 (2023-08-16)
 
 ### Features
