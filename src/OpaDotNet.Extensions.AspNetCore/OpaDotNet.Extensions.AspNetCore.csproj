@@ -28,11 +28,9 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Authorization" />
-        <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub">
         <PackageReference Include="OpaDotNet.Wasm" />
     </ItemGroup>
 
