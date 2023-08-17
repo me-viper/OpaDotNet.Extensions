@@ -30,7 +30,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Authorization" />
         <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub">
+        <PackageReference Include="Microsoft.SourceLink.GitHub" />
         <PackageReference Include="OpaDotNet.Wasm" />
     </ItemGroup>
 
