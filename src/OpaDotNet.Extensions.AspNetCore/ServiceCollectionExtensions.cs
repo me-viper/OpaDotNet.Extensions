@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using OpaDotNet.Wasm;
-using OpaDotNet.Wasm.Compilation;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
@@ -58,18 +57,15 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    public static IOpaAuthorizationBuilder AddDefaultCompiler(
-        this IOpaAuthorizationBuilder builder,
-        Action<RegoCliCompilerOptions>? configureCompiler = null)
+    public static IOpaAuthorizationBuilder AddDefaultCompiler(this IOpaAuthorizationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        return builder.AddCompiler<OpaPolicyCompiler>(configureCompiler: configureCompiler);
+        return builder.AddCompiler<OpaPolicyCompiler>();
     }
 
     public static IOpaAuthorizationBuilder AddCompiler<T>(
         this IOpaAuthorizationBuilder builder,
-        Func<IServiceProvider, T>? buildCompiler = null,
-        Action<RegoCliCompilerOptions>? configureCompiler = null) where T : class, IOpaPolicyCompiler
+        Func<IServiceProvider, T>? buildCompiler = null) where T : class, IOpaPolicyCompiler
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -80,9 +76,6 @@ public static class ServiceCollectionExtensions
             builder.Services.TryAddSingleton<IOpaPolicyCompiler>(buildCompiler);
 
         builder.Services.TryAddSingleton<IOpaEvaluatorFactoryProvider>(p => p.GetRequiredService<IOpaPolicyCompiler>());
-
-        if (configureCompiler != null)
-            builder.Services.Configure(configureCompiler);
 
         return builder;
     }
@@ -107,7 +100,6 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<OpaEvaluatorPoolProvider>();
         services.TryAddSingleton<IAuthorizationPolicyProvider, OpaPolicyProvider>();
         services.TryAddSingleton<IAuthorizationHandler, OpaPolicyHandler>();
-        services.TryAddSingleton<IRegoCompiler, RegoCliCompiler>();
         services.TryAddSingleton<IOpaPolicyService, PooledOpaPolicyService>();
 
         return services;

@@ -7,9 +7,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
+using OpaDotNet.Compilation.Abstractions;
+using OpaDotNet.Compilation.Cli;
 using OpaDotNet.Extensions.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Setup Cli compiler.
+builder.Services.Configure<RegoCliCompilerOptions>(builder.Configuration.GetSection("Compiler"));
+builder.Services.AddSingleton<IRegoCompiler, RegoCliCompiler>();
 
 // Register core services.
 builder.Services.AddOpaAuthorization(
@@ -45,7 +51,7 @@ builder.Services.AddSingleton<IAuthorizationHandler, OpaPolicyHandler<ResourcePo
 // OpaPolicyWatchingCompilationService will do initial compilation on startup and will watch changes.
 builder.Services.AddHostedService<OpaPolicyCompilationService>();
 
-// In real scenarios here will be more sophisticated authentication. 
+// In real scenarios here will be more sophisticated authentication.
 builder.Services.AddAuthentication()
     .AddScheme<AuthenticationSchemeOptions, NopAuthenticationSchemeHandler>(
         NopAuthenticationSchemeHandler.AuthenticationSchemeName,
@@ -59,7 +65,7 @@ var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Will evaluate example/allow rule and return 200. 
+// Will evaluate example/allow rule and return 200.
 app.MapGet("/allow", [OpaPolicyAuthorize("example", "allow")]() => "Hi!");
 
 // Will evaluate example/deny rule with IAuthorizationService and return 403.

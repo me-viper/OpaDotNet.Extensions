@@ -8,11 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Yarp.ReverseProxy" Version="2.0.1" />
+        <PackageReference Include="OpaDotNet.Compilation.Interop" Version="1.1.3"/>
+        <PackageReference Include="Yarp.ReverseProxy" Version="2.0.1"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\OpaDotNet.Extensions.AspNetCore\OpaDotNet.Extensions.AspNetCore.csproj" />
+        <ProjectReference Include="..\..\src\OpaDotNet.Extensions.AspNetCore\OpaDotNet.Extensions.AspNetCore.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

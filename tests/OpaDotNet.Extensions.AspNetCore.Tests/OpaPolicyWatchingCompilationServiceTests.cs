@@ -5,9 +5,9 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
+using OpaDotNet.Compilation.Interop;
 using OpaDotNet.Extensions.AspNetCore.Tests.Common;
 using OpaDotNet.Wasm;
-using OpaDotNet.Wasm.Compilation;
 
 using Xunit.Abstractions;
 
@@ -46,7 +46,7 @@ public class OpaPolicyWatchingCompilationServiceTests
         await File.WriteAllTextAsync("./Watch/policy.rego", Policy(0));
 
         using var compiler = new OpaPolicyCompiler(
-            new RegoCliCompiler(),
+            new RegoInteropCompiler(),
             new OptionsWrapper<OpaAuthorizationOptions>(opts),
             _loggerFactory
             );
@@ -77,14 +77,14 @@ public class OpaPolicyWatchingCompilationServiceTests
     private static string Policy(int i)
     {
         return $$"""
-package watch
-import future.keywords.if
+            package watch
+            import future.keywords.if
 
-# METADATA
-# entrypoint: true
-user if {
-    input.user == "u{{i}}"
-}
-""";
+            # METADATA
+            # entrypoint: true
+            user if {
+                input.user == "u{{i}}"
+            }
+            """;
     }
 }

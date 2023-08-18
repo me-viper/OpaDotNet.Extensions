@@ -5,15 +5,20 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
+using OpaDotNet.Compilation.Abstractions;
+using OpaDotNet.Compilation.Interop;
 using OpaDotNet.Extensions.AspNetCore;
-using OpaDotNet.Wasm.Compilation;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Setup Interop compiler.
+builder.Services.Configure<RegoCompilerOptions>(builder.Configuration.GetSection("Compiler"));
+builder.Services.AddSingleton<IRegoCompiler, RegoInteropCompiler>();
 
 builder.Services.AddOpaAuthorization(
     cfg =>
     {
-        cfg.AddDefaultCompiler(builder.Configuration.GetSection("Compiler").Bind);
+        cfg.AddDefaultCompiler();
         cfg.AddConfiguration(builder.Configuration.GetSection("Opa").Bind);
         cfg.AddJsonOptions(p => p.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
     }
@@ -21,7 +26,7 @@ builder.Services.AddOpaAuthorization(
 
 builder.Services.AddHostedService<OpaPolicyWatchingCompilationService>();
 
-// In real scenarios here will be more sophisticated authentication. 
+// In real scenarios here will be more sophisticated authentication.
 builder.Services.AddAuthentication()
     .AddScheme<AuthenticationSchemeOptions, NopAuthenticationSchemeHandler>(
         NopAuthenticationSchemeHandler.AuthenticationSchemeName,
@@ -37,7 +42,7 @@ builder.Services
 var app = builder.Build();
 
 // Ensure build path exists.
-var buildPath = app.Services.GetService<IOptions<RegoCliCompilerOptions>>()?.Value.OutputPath;
+var buildPath = app.Services.GetService<IOptions<RegoCompilerOptions>>()?.Value.OutputPath;
 
 if (!string.IsNullOrWhiteSpace(buildPath))
 {

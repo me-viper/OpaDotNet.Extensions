@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
+using OpaDotNet.Compilation.Abstractions;
 using OpaDotNet.Wasm;
-using OpaDotNet.Wasm.Compilation;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 

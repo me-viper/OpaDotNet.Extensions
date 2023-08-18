@@ -20,9 +20,10 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 
+using OpaDotNet.Compilation.Abstractions;
+using OpaDotNet.Compilation.Interop;
 using OpaDotNet.Extensions.AspNetCore.Tests.Common;
 using OpaDotNet.Wasm;
-using OpaDotNet.Wasm.Compilation;
 
 using Xunit.Abstractions;
 
@@ -114,7 +115,7 @@ public class AspNetCoreTests
     [InlineData("wrong", HttpStatusCode.Forbidden)]
     public async Task SimpleNoCompilation(string user, HttpStatusCode expected)
     {
-        var compiler = new RegoCliCompiler();
+        var compiler = new RegoInteropCompiler();
         var policy = await compiler.CompileBundle("./Policy");
 
         var opts = new WasmPolicyEngineOptions
@@ -450,6 +451,8 @@ public class AspNetCoreTests
                 builder =>
                 {
                     builder.AddLogging(p => p.AddXunit(output).AddFilter(pp => pp > LogLevel.Trace));
+
+                    builder.AddSingleton<IRegoCompiler, RegoInteropCompiler>();
 
                     builder.AddOpaAuthorization(
                         cfg =>

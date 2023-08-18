@@ -1,1 +1,3 @@
 #nullable enable
+static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddCompiler<T>(this OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder! builder, System.Func<System.IServiceProvider!, T!>? buildCompiler = null) -> OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!
+static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddDefaultCompiler(this OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder! builder) -> OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!
