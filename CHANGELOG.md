@@ -1,5 +1,11 @@
 # Changelog
 
+## OpaDotNet.Extensions v1.1.0 (2023-08-18)
+
+### Features
+
+* Switch to new compilation backend ([b87e99b](https://github.com/me-viper/OpaDotNet.Extensions/commit/b87e99bd025cf271a03519112ed636b8a895f7e6))
+
 ## OpaDotNet.Extensions v1.0.5 (2023-08-17)
 
 ### Features
