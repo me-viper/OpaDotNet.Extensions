@@ -1,0 +1,34 @@
+﻿policies:
+  - name: p1
+    data.yaml: |
+      a: 1
+      b: 2
+    source: |
+      package example
+      import future.keywords.if
+
+      # METADATA
+      # entrypoint: true
+      allow if {
+        true
+      }
+  - name: p2
+    source: |
+      package example
+      import future.keywords.if
+
+      # METADATA
+      # entrypoint: true
+      deny if {
+          false
+      }
+  - name: p3
+    source: |
+      package example
+      import future.keywords.if
+
+      # METADATA
+      # entrypoint: true
+      allow_path if {
+        startswith("/path/allow", input.path)
+      }

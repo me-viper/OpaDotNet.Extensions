@@ -40,13 +40,13 @@ public class OpaPolicyServiceTests
             }
             );
 
-        var compiler = new OpaPolicyCompiler(
+        var compiler = new FileSystemPolicySource(
             new RegoInteropCompiler(),
             opts,
             _loggerFactory
             );
 
-        await compiler.CompileBundle(false, CancellationToken.None);
+        await compiler.StartAsync(CancellationToken.None);
 
         using var service = new PooledOpaPolicyService(
             compiler,

@@ -1,1 +1,39 @@
 #nullable enable
+abstract OpaDotNet.Extensions.AspNetCore.OpaPolicySource.CompileBundleFromSource(bool recompiling, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.IO.Stream?>!
+OpaDotNet.Extensions.AspNetCore.ConfigurationPolicySource
+OpaDotNet.Extensions.AspNetCore.ConfigurationPolicySource.ConfigurationPolicySource(OpaDotNet.Compilation.Abstractions.IRegoCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! authOptions, Microsoft.Extensions.Options.IOptionsMonitor<OpaDotNet.Extensions.AspNetCore.PolicyOptions!>! policy, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+OpaDotNet.Extensions.AspNetCore.IOpaPolicySource
+OpaDotNet.Extensions.AspNetCore.IOpaPolicySource.CreateEvaluator() -> OpaDotNet.Wasm.IOpaEvaluator!
+OpaDotNet.Extensions.AspNetCore.IOpaPolicySource.OnPolicyUpdated() -> Microsoft.Extensions.Primitives.IChangeToken!
+OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource
+OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource.FileSystemPolicySource(OpaDotNet.Compilation.Abstractions.IRegoCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! options, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicySource
+OpaDotNet.Extensions.AspNetCore.OpaPolicySource.CompileBundle(bool recompiling, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+OpaDotNet.Extensions.AspNetCore.OpaPolicySource.Compiler.get -> OpaDotNet.Compilation.Abstractions.IRegoCompiler!
+OpaDotNet.Extensions.AspNetCore.OpaPolicySource.CreateEvaluator() -> OpaDotNet.Wasm.IOpaEvaluator!
+OpaDotNet.Extensions.AspNetCore.OpaPolicySource.Dispose() -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicySource.Logger.get -> Microsoft.Extensions.Logging.ILogger!
+OpaDotNet.Extensions.AspNetCore.OpaPolicySource.LoggerFactory.get -> Microsoft.Extensions.Logging.ILoggerFactory!
+OpaDotNet.Extensions.AspNetCore.OpaPolicySource.OnPolicyUpdated() -> Microsoft.Extensions.Primitives.IChangeToken!
+OpaDotNet.Extensions.AspNetCore.OpaPolicySource.OpaPolicySource(OpaDotNet.Compilation.Abstractions.IRegoCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! options, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicySource.Options.get -> Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>!
+OpaDotNet.Extensions.AspNetCore.PolicyDefinitionOptions
+OpaDotNet.Extensions.AspNetCore.PolicyDefinitionOptions.DataJson.get -> string?
+OpaDotNet.Extensions.AspNetCore.PolicyDefinitionOptions.DataJson.set -> void
+OpaDotNet.Extensions.AspNetCore.PolicyDefinitionOptions.DataYaml.get -> string?
+OpaDotNet.Extensions.AspNetCore.PolicyDefinitionOptions.DataYaml.set -> void
+OpaDotNet.Extensions.AspNetCore.PolicyDefinitionOptions.Package.get -> string?
+OpaDotNet.Extensions.AspNetCore.PolicyDefinitionOptions.Package.set -> void
+OpaDotNet.Extensions.AspNetCore.PolicyDefinitionOptions.PolicyDefinitionOptions() -> void
+OpaDotNet.Extensions.AspNetCore.PolicyDefinitionOptions.Source.get -> string?
+OpaDotNet.Extensions.AspNetCore.PolicyDefinitionOptions.Source.set -> void
+OpaDotNet.Extensions.AspNetCore.PolicyOptions
+OpaDotNet.Extensions.AspNetCore.PolicyOptions.PolicyOptions() -> void
+override OpaDotNet.Extensions.AspNetCore.ConfigurationPolicySource.CompileBundleFromSource(bool recompiling, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.IO.Stream?>!
+override OpaDotNet.Extensions.AspNetCore.ConfigurationPolicySource.Dispose(bool disposing) -> void
+override OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource.StartAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+override OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource.StopAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddPolicySource<T>(this OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder! builder, System.Func<System.IServiceProvider!, T!>? buildCompiler = null) -> OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!
+virtual OpaDotNet.Extensions.AspNetCore.OpaPolicySource.Dispose(bool disposing) -> void
+virtual OpaDotNet.Extensions.AspNetCore.OpaPolicySource.StartAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+virtual OpaDotNet.Extensions.AspNetCore.OpaPolicySource.StopAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!

@@ -46,36 +46,18 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    public static IOpaAuthorizationBuilder AddEvaluatorFactory<T>(
+    public static IOpaAuthorizationBuilder AddPolicySource<T>(
         this IOpaAuthorizationBuilder builder,
-        Func<IServiceProvider, T> evaluatorFactoryProvider) where T : class, IOpaEvaluatorFactoryProvider
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        builder.Services.TryAddSingleton<IOpaEvaluatorFactoryProvider>(evaluatorFactoryProvider);
-
-        return builder;
-    }
-
-    public static IOpaAuthorizationBuilder AddDefaultCompiler(this IOpaAuthorizationBuilder builder)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-        return builder.AddCompiler<OpaPolicyCompiler>();
-    }
-
-    public static IOpaAuthorizationBuilder AddCompiler<T>(
-        this IOpaAuthorizationBuilder builder,
-        Func<IServiceProvider, T>? buildCompiler = null) where T : class, IOpaPolicyCompiler
+        Func<IServiceProvider, T>? buildCompiler = null) where T : class, IOpaPolicySource
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         if (buildCompiler == null)
-            builder.Services.TryAddSingleton<IOpaPolicyCompiler, T>();
-
+            builder.Services.TryAddSingleton<IOpaPolicySource, T>();
         else
-            builder.Services.TryAddSingleton<IOpaPolicyCompiler>(buildCompiler);
+            builder.Services.TryAddSingleton<IOpaPolicySource>(buildCompiler);
 
-        builder.Services.TryAddSingleton<IOpaEvaluatorFactoryProvider>(p => p.GetRequiredService<IOpaPolicyCompiler>());
+        builder.Services.AddHostedService(p => p.GetRequiredService<IOpaPolicySource>());
 
         return builder;
     }

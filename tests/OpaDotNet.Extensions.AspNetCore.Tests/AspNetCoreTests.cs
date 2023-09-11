@@ -101,13 +101,28 @@ public class AspNetCoreTests
         Assert.Equal(expected, transaction.Response.StatusCode);
     }
 
-    private record TestEvaluatorFactoryProvider(OpaEvaluatorFactory Factory) : IOpaEvaluatorFactoryProvider
+    private record TestEvaluatorFactoryProvider(OpaEvaluatorFactory Factory) : IOpaPolicySource
     {
+        public IOpaEvaluator CreateEvaluator()
+        {
+            return Factory.Create();
+        }
+
         private readonly CancellationChangeToken _cct = new(CancellationToken.None);
 
         public void Dispose() => Factory.Dispose();
 
         public IChangeToken OnPolicyUpdated() => _cct;
+
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
     }
 
     [Theory]
@@ -147,7 +162,7 @@ public class AspNetCoreTests
                 p.AddOpaAuthorization(
                     cfg =>
                     {
-                        cfg.AddEvaluatorFactory(_ => factory);
+                        cfg.AddPolicySource(_ => factory);
                         cfg.AddConfiguration(
                             pp =>
                             {
@@ -457,7 +472,7 @@ public class AspNetCoreTests
                     builder.AddOpaAuthorization(
                         cfg =>
                         {
-                            cfg.AddDefaultCompiler();
+                            cfg.AddPolicySource<FileSystemPolicySource>();
                             cfg.AddConfiguration(
                                 p =>
                                 {
@@ -475,8 +490,6 @@ public class AspNetCoreTests
                                 );
                         }
                         );
-
-                    builder.AddHostedService<OpaPolicyCompilationService>();
 
                     if (handler == null)
                         builder.AddRouting();

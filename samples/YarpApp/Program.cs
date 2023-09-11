@@ -10,21 +10,24 @@ using OpaDotNet.Compilation.Interop;
 using OpaDotNet.Extensions.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddYamlFile("appsettings.yaml", false, true);
 
 // Setup Interop compiler.
 builder.Services.Configure<RegoCompilerOptions>(builder.Configuration.GetSection("Compiler"));
 builder.Services.AddSingleton<IRegoCompiler, RegoInteropCompiler>();
 
+// Configuration section containing policies.
+builder.Services.Configure<PolicyOptions>(builder.Configuration.GetSection("policies"));
+
 builder.Services.AddOpaAuthorization(
     cfg =>
     {
-        cfg.AddDefaultCompiler();
+        // Get policies from the configuration.
+        cfg.AddPolicySource<ConfigurationPolicySource>();
         cfg.AddConfiguration(builder.Configuration.GetSection("Opa").Bind);
         cfg.AddJsonOptions(p => p.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
     }
     );
-
-builder.Services.AddHostedService<OpaPolicyWatchingCompilationService>();
 
 // In real scenarios here will be more sophisticated authentication.
 builder.Services.AddAuthentication()

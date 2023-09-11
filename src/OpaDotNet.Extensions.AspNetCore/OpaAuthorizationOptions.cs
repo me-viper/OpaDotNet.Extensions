@@ -6,6 +6,9 @@ using OpaDotNet.Wasm;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
+/// <summary>
+/// Specifies options for Opa policy evaluator.
+/// </summary>
 [ExcludeFromCodeCoverage]
 public class OpaAuthorizationOptions
 {
@@ -43,7 +46,7 @@ public class OpaAuthorizationOptions
     public int MaximumEvaluatorsRetained { get; set; } = Environment.ProcessorCount * 2;
 
     /// <summary>
-    /// How frequently recompilation is allowed to happen if policy sources have been changed. 
+    /// How frequently recompilation is allowed to happen if policy sources have been changed.
     /// </summary>
     [UsedImplicitly]
     public TimeSpan MonitoringInterval { get; set; } = TimeSpan.Zero;

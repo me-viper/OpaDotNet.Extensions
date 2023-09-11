@@ -13,19 +13,53 @@ using Xunit.Abstractions;
 
 namespace OpaDotNet.Extensions.AspNetCore.Tests;
 
-public class OpaPolicyWatchingCompilationServiceTests
+public class FileSystemPolicySourceTests
 {
     private readonly ITestOutputHelper _output;
 
     private readonly ILoggerFactory _loggerFactory;
 
-    public OpaPolicyWatchingCompilationServiceTests(ITestOutputHelper output)
+    public FileSystemPolicySourceTests(ITestOutputHelper output)
     {
         _output = output;
         _loggerFactory = new LoggerFactory(new[] { new XunitLoggerProvider(output) });
     }
 
     private record UserPolicyInput([UsedImplicitly] string User);
+
+    [Fact]
+    public async Task Simple()
+    {
+        var opts = new OpaAuthorizationOptions
+        {
+            PolicyBundlePath = "./Watch",
+            EngineOptions = new WasmPolicyEngineOptions
+            {
+                SerializationOptions = new()
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                },
+            },
+        };
+
+        await File.WriteAllTextAsync("./Watch/policy.rego", Policy(0));
+
+        using var compiler = new FileSystemPolicySource(
+            new RegoInteropCompiler(),
+            new OptionsWrapper<OpaAuthorizationOptions>(opts),
+            _loggerFactory
+            );
+
+        await compiler.StartAsync(CancellationToken.None);
+
+        var eval = compiler.CreateEvaluator();
+        var result = eval.EvaluatePredicate(new UserPolicyInput("u0"));
+
+        _output.WriteLine("Checking: u0");
+        Assert.True(result.Result);
+
+        await compiler.StopAsync(CancellationToken.None);
+    }
 
     [Fact]
     public async Task WatchChanges()
@@ -45,23 +79,17 @@ public class OpaPolicyWatchingCompilationServiceTests
 
         await File.WriteAllTextAsync("./Watch/policy.rego", Policy(0));
 
-        using var compiler = new OpaPolicyCompiler(
+        using var compiler = new FileSystemPolicySource(
             new RegoInteropCompiler(),
             new OptionsWrapper<OpaAuthorizationOptions>(opts),
             _loggerFactory
             );
 
-        using var svc = new OpaPolicyWatchingCompilationService(
-            compiler,
-            new OptionsWrapper<OpaAuthorizationOptions>(opts),
-            _loggerFactory.CreateLogger<OpaPolicyWatchingCompilationService>()
-            );
-
-        await svc.StartAsync(CancellationToken.None);
+        await compiler.StartAsync(CancellationToken.None);
 
         for (var i = 0; i < 3; i++)
         {
-            var eval = compiler.Factory.Create();
+            var eval = compiler.CreateEvaluator();
             var result = eval.EvaluatePredicate(new UserPolicyInput($"u{i}"));
 
             _output.WriteLine($"Checking: u{i}");
@@ -71,7 +99,7 @@ public class OpaPolicyWatchingCompilationServiceTests
             await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
-        await svc.StopAsync(CancellationToken.None);
+        await compiler.StopAsync(CancellationToken.None);
     }
 
     private static string Policy(int i)

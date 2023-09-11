@@ -1,15 +1,19 @@
-﻿using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Primitives;
 
 using OpaDotNet.Wasm;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
-public interface IOpaEvaluatorFactoryProvider : IDisposable
+/// <summary>
+/// Opa policy source.
+/// </summary>
+public interface IOpaPolicySource : IDisposable, IHostedService
 {
     /// <summary>
-    /// Factory instance.
+    /// Creates policy evaluator instance.
     /// </summary>
-    OpaEvaluatorFactory Factory { get; }
+    IOpaEvaluator CreateEvaluator();
 
     /// <summary>
     /// Propagates notifications that a policy recompilation has occurred.

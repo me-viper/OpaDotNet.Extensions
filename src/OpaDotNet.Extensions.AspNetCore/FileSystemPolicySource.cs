@@ -1,53 +1,51 @@
-﻿using JetBrains.Annotations;
+﻿using Microsoft.Extensions.Options;
 
-using Microsoft.Extensions.Options;
+using OpaDotNet.Compilation.Abstractions;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
-/// <summary>
-/// Performs initial policy bundle compilation on startup and monitors policy source directory for changes.
-/// If policy sources change triggers bundle recompilation.
-/// </summary>
-[PublicAPI]
-public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationService, IDisposable
+public sealed class FileSystemPolicySource : OpaPolicySource
 {
-    private readonly ILogger _logger;
-
     private readonly FileSystemWatcher _policyWatcher;
 
-    private readonly PeriodicTimer _changesMonitor;
+    private readonly PeriodicTimer? _changesMonitor;
 
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
-    private readonly IOptions<OpaAuthorizationOptions> _options;
-
     private bool _needsRecompilation;
 
-    public OpaPolicyWatchingCompilationService(
-        IOpaPolicyCompiler compiler,
+    private bool MonitoringEnabled => Options.Value.MonitoringInterval > TimeSpan.Zero;
+
+    public FileSystemPolicySource(
+        IRegoCompiler compiler,
         IOptions<OpaAuthorizationOptions> options,
-        ILogger<OpaPolicyWatchingCompilationService> logger) : base(compiler)
+        ILoggerFactory loggerFactory) : base(compiler, options, loggerFactory)
     {
-        ArgumentNullException.ThrowIfNull(compiler);
-        ArgumentNullException.ThrowIfNull(options);
-        ArgumentNullException.ThrowIfNull(logger);
-
-        _logger = logger;
-        _options = options;
-
         if (string.IsNullOrWhiteSpace(options.Value.PolicyBundlePath))
             throw new InvalidOperationException("Compiler requires OpaAuthorizationOptions.PolicyBundlePath specified");
 
         _policyWatcher = new()
         {
-            Path = _options.Value.PolicyBundlePath!,
+            Path = Options.Value.PolicyBundlePath!,
             Filters = { "*.rego", "data.json", "data.yaml" },
             NotifyFilter = NotifyFilters.LastWrite,
             IncludeSubdirectories = true,
         };
 
-        _policyWatcher.Changed += PolicyChanged;
-        _changesMonitor = new(_options.Value.MonitoringInterval);
+        if (MonitoringEnabled)
+        {
+            _policyWatcher.Changed += PolicyChanged;
+            _changesMonitor = new(Options.Value.MonitoringInterval);
+        }
+    }
+
+    protected override async Task<Stream?> CompileBundleFromSource(bool recompiling, CancellationToken cancellationToken = default)
+    {
+        return await Compiler.CompileBundle(
+            Options.Value.PolicyBundlePath!,
+            cancellationToken: cancellationToken,
+            entrypoints: Options.Value.Entrypoints
+            ).ConfigureAwait(false);
     }
 
     private void PolicyChanged(object sender, FileSystemEventArgs e)
@@ -55,7 +53,7 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
         if (_cancellationTokenSource.Token.IsCancellationRequested)
             return;
 
-        _logger.LogDebug(
+        Logger.LogDebug(
             "Detected policy change {Change} in {File}. Stashing until next recompilation cycle",
             e.ChangeType,
             e.FullPath
@@ -66,7 +64,10 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
 
     private async Task TrackPolicyChanged(CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Watching for policy changes in {Path}", _options.Value.PolicyBundlePath);
+        if (!MonitoringEnabled || _changesMonitor == null)
+            return;
+
+        Logger.LogDebug("Watching for policy changes in {Path}", Options.Value.PolicyBundlePath);
 
         while (await _changesMonitor.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
         {
@@ -80,26 +81,18 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
 
                 _needsRecompilation = false;
 
-                _logger.LogDebug("Detected changes. Recompiling");
-                await Compiler.CompileBundle(true, cancellationToken).ConfigureAwait(false);
-                _logger.LogDebug("Recompilation succeeded");
+                Logger.LogDebug("Detected changes. Recompiling");
+                await CompileBundle(true, cancellationToken).ConfigureAwait(false);
+                Logger.LogDebug("Recompilation succeeded");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to process policy changes");
+                Logger.LogError(ex, "Failed to process policy changes");
                 _needsRecompilation = true;
             }
         }
 
-        _logger.LogDebug("Stopped watching for policy changes");
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        _changesMonitor.Dispose();
-        _policyWatcher.Dispose();
-        _cancellationTokenSource.Dispose();
+        Logger.LogDebug("Stopped watching for policy changes");
     }
 
     /// <inheritdoc/>
@@ -107,8 +100,11 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
     {
         await base.StartAsync(cancellationToken).ConfigureAwait(false);
 
-        _policyWatcher.EnableRaisingEvents = true;
-        _ = Task.Run(() => TrackPolicyChanged(_cancellationTokenSource.Token), cancellationToken);
+        if (MonitoringEnabled)
+        {
+            _policyWatcher.EnableRaisingEvents = true;
+            _ = Task.Run(() => TrackPolicyChanged(_cancellationTokenSource.Token), cancellationToken);
+        }
     }
 
     /// <inheritdoc/>
@@ -118,6 +114,6 @@ public sealed class OpaPolicyWatchingCompilationService : OpaPolicyCompilationSe
 
         _policyWatcher.EnableRaisingEvents = false;
         _cancellationTokenSource.Cancel();
-        _logger.LogDebug("Stopped");
+        Logger.LogDebug("Stopped");
     }
 }

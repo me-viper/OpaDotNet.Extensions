@@ -16,12 +16,12 @@ internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
 
     private readonly OpaEvaluatorPoolProvider _poolProvider;
 
-    private readonly IOpaEvaluatorFactoryProvider _factoryProvider;
+    private readonly IOpaPolicySource _factoryProvider;
 
     private readonly object _syncLock = new();
 
     public PooledOpaPolicyService(
-        IOpaEvaluatorFactoryProvider factoryProvider,
+        IOpaPolicySource factoryProvider,
         IOptions<OpaAuthorizationOptions> options,
         OpaEvaluatorPoolProvider poolProvider,
         ILogger<PooledOpaPolicyService> logger)
@@ -37,7 +37,7 @@ internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
 
         _poolProvider.MaximumRetained = options.Value.MaximumEvaluatorsRetained;
 
-        _evaluatorPool = _poolProvider.Create(new OpaEvaluatorPoolPolicy(() => _factoryProvider.Factory.Create()));
+        _evaluatorPool = _poolProvider.Create(new OpaEvaluatorPoolPolicy(() => _factoryProvider.CreateEvaluator()));
         _recompilationMonitor = ChangeToken.OnChange(factoryProvider.OnPolicyUpdated, ResetPool);
     }
 
@@ -48,7 +48,7 @@ internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
         lock (_syncLock)
         {
             var oldPool = _evaluatorPool;
-            _evaluatorPool = _poolProvider.Create(new OpaEvaluatorPoolPolicy(() => _factoryProvider.Factory.Create()));
+            _evaluatorPool = _poolProvider.Create(new OpaEvaluatorPoolPolicy(() => _factoryProvider.CreateEvaluator()));
 
             if (oldPool is not IDisposable pool)
             {

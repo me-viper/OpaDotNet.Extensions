@@ -12,7 +12,7 @@ dotnet run
 Run:
 
 ```bash
-curl http://localhost:5078/allow -v
+curl http://localhost:5079/allow -v
 ```
 
 Will execute `example/allow` policy and forward you to `example.com`:
@@ -20,7 +20,7 @@ Will execute `example/allow` policy and forward you to `example.com`:
 Run:
 
 ```bash
-curl http://localhost:5078/deny -v
+curl http://localhost:5079/deny -v
 ```
 
 Will execute `example/deny` policy and output:

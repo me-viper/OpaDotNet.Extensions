@@ -21,8 +21,8 @@ builder.Services.AddSingleton<IRegoCompiler, RegoCliCompiler>();
 builder.Services.AddOpaAuthorization(
     cfg =>
     {
-        // Register default compiler.
-        cfg.AddDefaultCompiler();
+        // Get policies from the file system.
+        cfg.AddPolicySource<FileSystemPolicySource>();
 
         // Configure.
         cfg.AddConfiguration(
@@ -47,9 +47,6 @@ builder.Services.AddOpaAuthorization(
 
 // Handler with custom policy input.
 builder.Services.AddSingleton<IAuthorizationHandler, OpaPolicyHandler<ResourcePolicyInput>>();
-
-// OpaPolicyWatchingCompilationService will do initial compilation on startup and will watch changes.
-builder.Services.AddHostedService<OpaPolicyCompilationService>();
 
 // In real scenarios here will be more sophisticated authentication.
 builder.Services.AddAuthentication()

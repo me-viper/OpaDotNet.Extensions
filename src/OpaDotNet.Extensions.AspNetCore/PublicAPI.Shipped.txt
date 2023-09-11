@@ -1,11 +1,6 @@
 #nullable enable
 OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder
 OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder.Services.get -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-OpaDotNet.Extensions.AspNetCore.IOpaEvaluatorFactoryProvider
-OpaDotNet.Extensions.AspNetCore.IOpaEvaluatorFactoryProvider.Factory.get -> OpaDotNet.Wasm.OpaEvaluatorFactory!
-OpaDotNet.Extensions.AspNetCore.IOpaEvaluatorFactoryProvider.OnPolicyUpdated() -> Microsoft.Extensions.Primitives.IChangeToken!
-OpaDotNet.Extensions.AspNetCore.IOpaPolicyCompiler
-OpaDotNet.Extensions.AspNetCore.IOpaPolicyCompiler.CompileBundle(bool recompiling, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 OpaDotNet.Extensions.AspNetCore.IOpaPolicyService
 OpaDotNet.Extensions.AspNetCore.IOpaPolicyService.Evaluate<TInput, TOutput>(TInput input, string! entrypoint) -> TOutput
 OpaDotNet.Extensions.AspNetCore.IOpaPolicyService.EvaluatePredicate<TInput>(TInput input, string! entrypoint) -> bool
@@ -30,9 +25,6 @@ OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolProvider
 OpaDotNet.Extensions.AspNetCore.OpaEvaluatorPoolProvider.OpaEvaluatorPoolProvider() -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyAuthorizeAttribute
 OpaDotNet.Extensions.AspNetCore.OpaPolicyAuthorizeAttribute.OpaPolicyAuthorizeAttribute(string! module, string? rule) -> void
-OpaDotNet.Extensions.AspNetCore.OpaPolicyCompilationService
-OpaDotNet.Extensions.AspNetCore.OpaPolicyCompilationService.Compiler.get -> OpaDotNet.Extensions.AspNetCore.IOpaPolicyCompiler!
-OpaDotNet.Extensions.AspNetCore.OpaPolicyCompilationService.OpaPolicyCompilationService(OpaDotNet.Extensions.AspNetCore.IOpaPolicyCompiler! compiler) -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.OpaPolicyHandler(OpaDotNet.Extensions.AspNetCore.IOpaPolicyService! service, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! options, Microsoft.Extensions.Logging.ILogger<OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler!>! logger) -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>
@@ -45,20 +37,10 @@ OpaDotNet.Extensions.AspNetCore.OpaPolicyProvider.OpaPolicyProvider(Microsoft.Ex
 OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement
 OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.Entrypoint.get -> string!
 OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.OpaPolicyRequirement(string! entrypoint) -> void
-OpaDotNet.Extensions.AspNetCore.OpaPolicyWatchingCompilationService
-OpaDotNet.Extensions.AspNetCore.OpaPolicyWatchingCompilationService.Dispose() -> void
-OpaDotNet.Extensions.AspNetCore.OpaPolicyWatchingCompilationService.OpaPolicyWatchingCompilationService(OpaDotNet.Extensions.AspNetCore.IOpaPolicyCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! options, Microsoft.Extensions.Logging.ILogger<OpaDotNet.Extensions.AspNetCore.OpaPolicyWatchingCompilationService!>! logger) -> void
 OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement) -> System.Threading.Tasks.Task!
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement, TResource resource) -> System.Threading.Tasks.Task!
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.ToString() -> string!
-override OpaDotNet.Extensions.AspNetCore.OpaPolicyWatchingCompilationService.StartAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
-override OpaDotNet.Extensions.AspNetCore.OpaPolicyWatchingCompilationService.StopAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
-static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddCompiler<T>(this OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder! builder, System.Func<System.IServiceProvider!, T!>? buildCompiler = null) -> OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!
 static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddConfiguration(this OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder! builder, System.Action<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! configuration) -> OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!
-static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddDefaultCompiler(this OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder! builder) -> OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!
-static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddEvaluatorFactory<T>(this OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder! builder, System.Func<System.IServiceProvider!, T!>! evaluatorFactoryProvider) -> OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!
 static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddJsonOptions(this OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder! builder, System.Action<System.Text.Json.JsonSerializerOptions!>! jsonOptions) -> OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!
 static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddOpaAuthorization(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!>! configure) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-virtual OpaDotNet.Extensions.AspNetCore.OpaPolicyCompilationService.StartAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
-virtual OpaDotNet.Extensions.AspNetCore.OpaPolicyCompilationService.StopAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
