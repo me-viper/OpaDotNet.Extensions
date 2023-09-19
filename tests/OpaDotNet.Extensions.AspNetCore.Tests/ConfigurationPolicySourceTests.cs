@@ -111,7 +111,7 @@ public class ConfigurationPolicySourceTests
 
         await compiler.StartAsync(CancellationToken.None);
 
-        var evaluator = compiler.CreateEvaluator();
+        using var evaluator = compiler.CreateEvaluator();
         var result = evaluator.EvaluatePredicate(new { t = data }, entrypoint);
 
         Assert.True(result.Result);
