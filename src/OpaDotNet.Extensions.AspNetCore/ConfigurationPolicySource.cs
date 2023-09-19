@@ -9,14 +9,14 @@ namespace OpaDotNet.Extensions.AspNetCore;
 [UsedImplicitly]
 public class ConfigurationPolicySource : OpaPolicySource
 {
-    private readonly IOptionsMonitor<PolicyOptions> _policy;
+    private readonly IOptionsMonitor<OpaPolicyOptions> _policy;
 
     private readonly IDisposable? _policyChangeMonitor;
 
     public ConfigurationPolicySource(
         IRegoCompiler compiler,
         IOptions<OpaAuthorizationOptions> authOptions,
-        IOptionsMonitor<PolicyOptions> policy,
+        IOptionsMonitor<OpaPolicyOptions> policy,
         ILoggerFactory loggerFactory) : base(compiler, authOptions, loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(policy);
@@ -27,7 +27,7 @@ public class ConfigurationPolicySource : OpaPolicySource
             {
                 try
                 {
-                    Task.Run(() => CompileBundle(true));
+                    Task.Run(() => CompileBundle(true)).ConfigureAwait(false);
                 }
                 catch (Exception)
                 {
@@ -72,8 +72,14 @@ public class ConfigurationPolicySource : OpaPolicySource
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
-        _policyChangeMonitor?.Dispose();
-
-        base.Dispose(disposing);
+        try
+        {
+            if (disposing)
+                _policyChangeMonitor?.Dispose();
+        }
+        finally
+        {
+            base.Dispose(disposing);
+        }
     }
 }

@@ -17,7 +17,7 @@ builder.Services.Configure<RegoCompilerOptions>(builder.Configuration.GetSection
 builder.Services.AddSingleton<IRegoCompiler, RegoInteropCompiler>();
 
 // Configuration section containing policies.
-builder.Services.Configure<PolicyOptions>(builder.Configuration.GetSection("policies"));
+builder.Services.Configure<OpaPolicyOptions>(builder.Configuration.GetSection("policies"));
 
 builder.Services.AddOpaAuthorization(
     cfg =>

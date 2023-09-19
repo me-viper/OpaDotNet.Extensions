@@ -95,6 +95,23 @@ public sealed class FileSystemPolicySource : OpaPolicySource
         Logger.LogDebug("Stopped watching for policy changes");
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        try
+        {
+            if (disposing)
+            {
+                _changesMonitor?.Dispose();
+                _policyWatcher.Dispose();
+                _cancellationTokenSource.Dispose();
+            }
+        }
+        finally
+        {
+            base.Dispose(disposing);
+        }
+    }
+
     /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken cancellationToken)
     {

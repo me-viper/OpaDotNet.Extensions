@@ -89,7 +89,7 @@ public abstract class OpaPolicySource : IOpaPolicySource
     [PublicAPI]
     protected abstract Task<Stream?> CompileBundleFromSource(bool recompiling, CancellationToken cancellationToken = default);
 
-    public async Task CompileBundle(bool recompiling, CancellationToken cancellationToken = default)
+    protected internal async Task CompileBundle(bool recompiling, CancellationToken cancellationToken = default)
     {
         Logger.LogDebug("Compiling");
 

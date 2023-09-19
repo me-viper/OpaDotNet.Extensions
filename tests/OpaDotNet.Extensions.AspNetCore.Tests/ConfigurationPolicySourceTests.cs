@@ -43,7 +43,7 @@ public class ConfigurationPolicySourceTests
             },
         };
 
-        var policyOptions = new PolicyOptions
+        var policyOptions = new OpaPolicyOptions
         {
             {
                 "p1",
@@ -99,29 +99,29 @@ public class ConfigurationPolicySourceTests
             """;
     }
 
-    private class PolicyOptionsMonitor : IOptionsMonitor<PolicyOptions>
+    private class PolicyOptionsMonitor : IOptionsMonitor<OpaPolicyOptions>
     {
-        private Action<PolicyOptions, string?>? _listener;
+        private Action<OpaPolicyOptions, string?>? _listener;
 
-        public PolicyOptions CurrentValue { get; private set; }
+        public OpaPolicyOptions CurrentValue { get; private set; }
 
-        public PolicyOptionsMonitor(PolicyOptions opts)
+        public PolicyOptionsMonitor(OpaPolicyOptions opts)
         {
             CurrentValue = opts;
         }
 
-        public PolicyOptions Get(string? name)
+        public OpaPolicyOptions Get(string? name)
         {
             return CurrentValue;
         }
 
-        public void Change(PolicyOptions opts)
+        public void Change(OpaPolicyOptions opts)
         {
             CurrentValue = opts;
             _listener?.Invoke(CurrentValue, null);
         }
 
-        public IDisposable? OnChange(Action<PolicyOptions, string?> listener)
+        public IDisposable? OnChange(Action<OpaPolicyOptions, string?> listener)
         {
             _listener = listener;
             return null;
