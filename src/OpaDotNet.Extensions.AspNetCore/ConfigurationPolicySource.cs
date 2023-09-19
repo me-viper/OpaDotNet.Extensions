@@ -48,13 +48,13 @@ public class ConfigurationPolicySource : OpaPolicySource
             foreach (var (name, policy) in _policy.CurrentValue)
             {
                 if (!string.IsNullOrWhiteSpace(policy.DataJson))
-                    bundleWriter.WriteEntry(policy.DataJson, Path.Combine(policy.Package ?? "", "/data.json"));
+                    bundleWriter.WriteEntry(policy.DataJson, $"{policy.Package}/data.json");
 
                 if (!string.IsNullOrWhiteSpace(policy.DataYaml))
-                    bundleWriter.WriteEntry(policy.DataYaml, Path.Combine(policy.Package ?? "", "/data.yaml"));
+                    bundleWriter.WriteEntry(policy.DataYaml, $"{policy.Package}/data.yaml");
 
                 if (!string.IsNullOrWhiteSpace(policy.Source))
-                    bundleWriter.WriteEntry(policy.Source, Path.Combine(policy.Package ?? "", $"/{name}.rego"));
+                    bundleWriter.WriteEntry(policy.Source, $"/{policy.Package}/{name}.rego");
             }
         }
 

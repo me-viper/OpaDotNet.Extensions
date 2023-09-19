@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
+using OpaDotNet.Compilation.Abstractions;
 using OpaDotNet.Compilation.Interop;
 using OpaDotNet.Extensions.AspNetCore.Tests.Common;
 using OpaDotNet.Wasm;
@@ -26,6 +27,95 @@ public class ConfigurationPolicySourceTests
     }
 
     private record UserPolicyInput([UsedImplicitly] string User);
+
+    [Theory]
+    [InlineData(2, "p1/t1/allow")]
+    [InlineData(3, "p2/allow")]
+    [InlineData(4, "p2/allow2")]
+    public async Task Configuration(int data, string entrypoint)
+    {
+        var opts = new OpaAuthorizationOptions
+        {
+            EngineOptions = new WasmPolicyEngineOptions
+            {
+                SerializationOptions = new()
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                },
+            },
+        };
+
+        var policyOptions = new OpaPolicyOptions
+        {
+            {
+                "p1",
+                new()
+                {
+                    Package = "p1/t1",
+                    DataJson = """{ "t": 2 }""",
+                    Source = """
+                        package p1.t1
+                        import future.keywords.if
+                        # METADATA
+                        # entrypoint: true
+                        allow if { input.t == data.p1.t1.t }
+                        """,
+                }
+            },
+            {
+                "p2",
+                new()
+                {
+                    DataYaml = "t: 3",
+                    Source = """
+                        package p2
+                        import future.keywords.if
+                        # METADATA
+                        # entrypoint: true
+                        allow if { input.t == data.t }
+                        """,
+                }
+            },
+            {
+                "p3",
+                new()
+                {
+                    DataYaml = "t1: 4",
+                    Source = """
+                        package p2
+                        import future.keywords.if
+                        # METADATA
+                        # entrypoint: true
+                        allow2 if { input.t == data.t1 }
+                        """,
+                }
+            },
+        };
+
+        var optionsMonitor = new PolicyOptionsMonitor(policyOptions);
+
+        var compilerOpts = new RegoCompilerOptions
+        {
+            Debug = true,
+        };
+
+        using var compiler = new ConfigurationPolicySource(
+            new RegoInteropCompiler(
+                new OptionsWrapper<RegoCompilerOptions>(compilerOpts),
+                _loggerFactory.CreateLogger<RegoInteropCompiler>()
+                ),
+            new OptionsWrapper<OpaAuthorizationOptions>(opts),
+            optionsMonitor,
+            _loggerFactory
+            );
+
+        await compiler.StartAsync(CancellationToken.None);
+
+        var evaluator = compiler.CreateEvaluator();
+        var result = evaluator.EvaluatePredicate(new { t = data }, entrypoint);
+
+        Assert.True(result.Result);
+    }
 
     [Fact]
     public async Task WatchChanges()
