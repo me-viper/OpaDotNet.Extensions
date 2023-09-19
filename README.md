@@ -59,8 +59,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpaAuthorization(
     cfg =>
     {
-        // Register default compiler.
-        cfg.AddDefaultCompiler();
+        // Get policies from the file system.
+        cfg.AddPolicySource<FileSystemPolicySource>();
 
         // Configure.
         cfg.AddConfiguration(
@@ -82,9 +82,6 @@ builder.Services.AddOpaAuthorization(
             );
     }
     );
-
-// OpaPolicyWatchingCompilationService will do initial compilation on startup and will watch changes.
-builder.Services.AddHostedService<OpaPolicyWatchingCompilationService>();
 
 // In real scenarios here will be more sophisticated authentication.
 builder.Services.AddAuthentication()
