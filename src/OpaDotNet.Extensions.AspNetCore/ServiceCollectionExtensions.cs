@@ -69,9 +69,7 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configure);
 
-        services.AddOptions();
         services.AddOpaAuthorization();
-
         configure(new OpaAuthorizationBuilder(services));
 
         return services;
@@ -79,6 +77,7 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddOpaAuthorization(this IServiceCollection services)
     {
+        services.AddOptions();
         services.TryAddSingleton<OpaEvaluatorPoolProvider>();
         services.TryAddSingleton<IAuthorizationPolicyProvider, OpaPolicyProvider>();
         services.TryAddSingleton<IAuthorizationHandler, OpaPolicyHandler>();
