@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - develop
-      - 'releases/*'
+      - 'release/*'
     paths:
       - '**.cs'
 
