@@ -19,7 +19,7 @@ builder.Services.AddOpaAuthorization(
         cfg.AddCompiler<RegoInteropCompiler, RegoCompilerOptions>(builder.Configuration.GetSection("Compiler").Bind);
 
         // Get policies from the configuration.
-        cfg.AddConfigurationPolicySource(builder.Configuration.GetSection("policies").Bind);
+        cfg.AddConfigurationPolicySource(builder.Configuration.GetSection("policies"));
         cfg.AddConfiguration(builder.Configuration.GetSection("Opa").Bind);
         cfg.AddJsonOptions(p => p.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
     }

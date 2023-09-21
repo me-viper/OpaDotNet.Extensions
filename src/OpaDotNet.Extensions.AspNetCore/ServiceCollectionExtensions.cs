@@ -3,6 +3,7 @@ using System.Text.Json;
 
 using JetBrains.Annotations;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -82,6 +83,19 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
         builder.Services.TryAddSingleton<IRegoCompiler>(buildCompiler);
+        return builder;
+    }
+
+    public static IOpaAuthorizationBuilder AddConfigurationPolicySource(
+        this IOpaAuthorizationBuilder builder,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        builder.Services.Configure<OpaPolicyOptions>(configuration);
+        builder.AddPolicySource<ConfigurationPolicySource>();
+
         return builder;
     }
 
