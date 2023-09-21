@@ -60,7 +60,7 @@ builder.Services.AddOpaAuthorization(
     cfg =>
     {
         // Get policies from the file system.
-        cfg.AddPolicySource<FileSystemPolicySource>();
+        cfg.AddFileSystemPolicySource();
 
         // Configure.
         cfg.AddConfiguration(
