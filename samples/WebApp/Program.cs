@@ -7,22 +7,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-using OpaDotNet.Compilation.Abstractions;
 using OpaDotNet.Compilation.Cli;
 using OpaDotNet.Extensions.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Setup Cli compiler.
-builder.Services.Configure<RegoCliCompilerOptions>(builder.Configuration.GetSection("Compiler"));
-builder.Services.AddSingleton<IRegoCompiler, RegoCliCompiler>();
-
 // Register core services.
 builder.Services.AddOpaAuthorization(
     cfg =>
     {
+        // Setup Cli compiler.
+        cfg.AddCompiler<RegoCliCompiler, RegoCliCompilerOptions>(builder.Configuration.GetSection("Compiler").Bind);
+
         // Get policies from the file system.
-        cfg.AddPolicySource<FileSystemPolicySource>();
+        cfg.AddFileSystemPolicySource();
 
         // Configure.
         cfg.AddConfiguration(

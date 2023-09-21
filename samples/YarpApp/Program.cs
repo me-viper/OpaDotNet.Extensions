@@ -12,18 +12,14 @@ using OpaDotNet.Extensions.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddYamlFile("appsettings.yaml", false, true);
 
-// Setup Interop compiler.
-builder.Services.Configure<RegoCompilerOptions>(builder.Configuration.GetSection("Compiler"));
-builder.Services.AddSingleton<IRegoCompiler, RegoInteropCompiler>();
-
-// Configuration section containing policies.
-builder.Services.Configure<OpaPolicyOptions>(builder.Configuration.GetSection("policies"));
-
 builder.Services.AddOpaAuthorization(
     cfg =>
     {
+        // Setup Interop compiler.
+        cfg.AddCompiler<RegoInteropCompiler, RegoCompilerOptions>(builder.Configuration.GetSection("Compiler").Bind);
+
         // Get policies from the configuration.
-        cfg.AddPolicySource<ConfigurationPolicySource>();
+        cfg.AddConfigurationPolicySource(builder.Configuration.GetSection("policies").Bind);
         cfg.AddConfiguration(builder.Configuration.GetSection("Opa").Bind);
         cfg.AddJsonOptions(p => p.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
     }

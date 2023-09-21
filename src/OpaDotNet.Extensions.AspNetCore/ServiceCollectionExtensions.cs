@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
+using OpaDotNet.Compilation.Abstractions;
 using OpaDotNet.Wasm;
 
 namespace OpaDotNet.Extensions.AspNetCore;
@@ -46,16 +47,76 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    public static IOpaAuthorizationBuilder AddPolicySource<T>(
+    public static IOpaAuthorizationBuilder AddCompiler<TCompiler, TOptions>(
         this IOpaAuthorizationBuilder builder,
-        Func<IServiceProvider, T>? buildCompiler = null) where T : class, IOpaPolicySource
+        Action<TOptions> configuration,
+        Func<IServiceProvider, TCompiler>? buildCompiler = null)
+        where TCompiler : class, IRegoCompiler
+        where TOptions : class
     {
         ArgumentNullException.ThrowIfNull(builder);
 
+        builder.Services.Configure(configuration);
+
         if (buildCompiler == null)
+            builder.AddCompiler<TCompiler>();
+        else
+            builder.AddCompiler(buildCompiler);
+
+        return builder;
+    }
+
+    public static IOpaAuthorizationBuilder AddCompiler<T>(
+        this IOpaAuthorizationBuilder builder)
+        where T : class, IRegoCompiler
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        builder.Services.TryAddSingleton<IRegoCompiler, T>();
+        return builder;
+    }
+
+    public static IOpaAuthorizationBuilder AddCompiler<T>(
+        this IOpaAuthorizationBuilder builder,
+        Func<IServiceProvider, T> buildCompiler)
+        where T : class, IRegoCompiler
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        builder.Services.TryAddSingleton<IRegoCompiler>(buildCompiler);
+        return builder;
+    }
+
+    public static IOpaAuthorizationBuilder AddConfigurationPolicySource(
+        this IOpaAuthorizationBuilder builder,
+        Action<OpaPolicyOptions> configuration)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        builder.Services.Configure(configuration);
+        builder.AddPolicySource<ConfigurationPolicySource>();
+
+        return builder;
+    }
+
+    public static IOpaAuthorizationBuilder AddFileSystemPolicySource(this IOpaAuthorizationBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder.AddPolicySource<FileSystemPolicySource>();
+
+        return builder;
+    }
+
+    public static IOpaAuthorizationBuilder AddPolicySource<T>(
+        this IOpaAuthorizationBuilder builder,
+        Func<IServiceProvider, T>? buildPolicySource = null) where T : class, IOpaPolicySource
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        if (buildPolicySource == null)
             builder.Services.TryAddSingleton<IOpaPolicySource, T>();
         else
-            builder.Services.TryAddSingleton<IOpaPolicySource>(buildCompiler);
+            builder.Services.TryAddSingleton<IOpaPolicySource>(buildPolicySource);
 
         builder.Services.AddHostedService(p => p.GetRequiredService<IOpaPolicySource>());
 
