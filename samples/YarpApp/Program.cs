@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 
 using OpaDotNet.Compilation.Abstractions;
@@ -11,6 +12,10 @@ using OpaDotNet.Extensions.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddYamlFile("appsettings.yaml", false, true);
+
+// Custom policy handler.
+// Should be registered before AddOpaAuthorization is called.
+builder.Services.AddSingleton<IAuthorizationHandler, CustomPolicyHandler>();
 
 builder.Services.AddOpaAuthorization(
     cfg =>
@@ -77,5 +82,49 @@ internal class NopAuthenticationSchemeHandler : AuthenticationHandler<Authentica
         var result = AuthenticateResult.Success(ticket);
 
         return Task.FromResult(result);
+    }
+}
+
+internal record PolicyResult
+{
+    public DenyReason[] Deny { get; set; } = Array.Empty<DenyReason>();
+}
+
+internal record DenyReason
+{
+    public string? Reason { get; set; }
+};
+
+internal class CustomPolicyHandler : OpaPolicyHandler
+{
+    public CustomPolicyHandler(
+        IOpaPolicyService service,
+        IOptions<OpaAuthorizationOptions> options,
+        ILogger<CustomPolicyHandler> logger) : base(service, options, logger)
+    {
+    }
+
+    protected override Task HandleRequirementAsync(
+        AuthorizationHandlerContext context,
+        OpaPolicyRequirement requirement,
+        IHttpRequestPolicyInput resource)
+    {
+        Logger.LogDebug("Evaluating policy");
+
+        // We expect policies to return something more descriptive rather than yes/no.
+        var result = Service.Evaluate<IHttpRequestPolicyInput, PolicyResult>(resource, requirement.Entrypoint);
+
+        if (result.Deny.Length == 0)
+        {
+            Logger.LogDebug("Authorization policy succeeded");
+            context.Succeed(requirement);
+        }
+        else
+        {
+            var reasons = string.Join("\n", result.Deny.Select(p => p.Reason));
+            Logger.LogDebug("Authorization policy denied:\n {Reasons}", reasons);
+        }
+
+        return Task.CompletedTask;
     }
 }

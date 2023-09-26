@@ -88,3 +88,32 @@ static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddConfigurat
 virtual OpaDotNet.Extensions.AspNetCore.OpaPolicySource.Dispose(bool disposing) -> void
 virtual OpaDotNet.Extensions.AspNetCore.OpaPolicySource.StartAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 virtual OpaDotNet.Extensions.AspNetCore.OpaPolicySource.StopAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+OpaDotNet.Extensions.AspNetCore.ClaimPolicyInput
+OpaDotNet.Extensions.AspNetCore.ClaimPolicyInput.ClaimPolicyInput(string! Type, string! Value) -> void
+OpaDotNet.Extensions.AspNetCore.ClaimPolicyInput.Type.get -> string!
+OpaDotNet.Extensions.AspNetCore.ClaimPolicyInput.Type.init -> void
+OpaDotNet.Extensions.AspNetCore.ClaimPolicyInput.Value.get -> string!
+OpaDotNet.Extensions.AspNetCore.ClaimPolicyInput.Value.init -> void
+OpaDotNet.Extensions.AspNetCore.IConnectionInput
+OpaDotNet.Extensions.AspNetCore.IConnectionInput.LocalIpAddress.get -> string?
+OpaDotNet.Extensions.AspNetCore.IConnectionInput.LocalPort.get -> int
+OpaDotNet.Extensions.AspNetCore.IConnectionInput.RemoteIpAddress.get -> string?
+OpaDotNet.Extensions.AspNetCore.IConnectionInput.RemotePort.get -> int
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Claims.get -> System.Collections.Generic.IEnumerable<OpaDotNet.Extensions.AspNetCore.ClaimPolicyInput!>!
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Connection.get -> OpaDotNet.Extensions.AspNetCore.IConnectionInput!
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Headers.get -> System.Collections.Generic.IDictionary<string!, string?>!
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Host.get -> string!
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Method.get -> string!
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Path.get -> string?
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.PathBase.get -> string?
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Protocol.get -> string!
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Query.get -> Microsoft.AspNetCore.Http.IQueryCollection!
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.QueryString.get -> string?
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Scheme.get -> string!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.Logger.get -> Microsoft.Extensions.Logging.ILogger!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.Options.get -> Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.Service.get -> OpaDotNet.Extensions.AspNetCore.IOpaPolicyService!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>.Logger.get -> Microsoft.Extensions.Logging.ILogger!
+OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>.Service.get -> OpaDotNet.Extensions.AspNetCore.IOpaPolicyService!
+virtual OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement, OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput! resource) -> System.Threading.Tasks.Task!

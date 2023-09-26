@@ -4,31 +4,43 @@
       a: 1
       b: 2
     source: |
-      package example
+      # METADATA
+      # entrypoint: true
+      package example.allow
       import future.keywords.if
 
       # METADATA
-      # entrypoint: true
-      allow if {
-        true
+      # description: This policy never denies
+      deny if {
+        false
       }
+
   - name: p2
     source: |
-      package example
+      # METADATA
+      # entrypoint: true
+      package example.deny
       import future.keywords.if
 
       # METADATA
-      # entrypoint: true
-      deny if {
-          false
+      # description: This policy always denies
+      deny[format(rego.metadata.rule())] {
+        true
       }
+
+      format(meta) := {"reason": meta.description}
+
   - name: p3
     source: |
-      package example
+      # METADATA
+      # entrypoint: true
+      package example.path
       import future.keywords.if
 
       # METADATA
-      # entrypoint: true
-      allow_path if {
-        startswith("/path/allow", input.path)
+      # description: Path is not allowed
+      deny[format(rego.metadata.rule())] {
+        not startswith(input.path, "/path/allow")
       }
+
+      format(meta) := {"reason": meta.description}

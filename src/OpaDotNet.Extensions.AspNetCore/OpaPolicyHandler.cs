@@ -1,15 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using JetBrains.Annotations;
+
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
+[PublicAPI]
 public class OpaPolicyHandler : AuthorizationHandler<OpaPolicyRequirement>
 {
-    private readonly IOpaPolicyService _service;
+    protected IOpaPolicyService Service { get; }
 
-    private readonly ILogger _logger;
+    protected ILogger Logger { get; }
 
-    private readonly IOptions<OpaAuthorizationOptions> _options;
+    protected IOptions<OpaAuthorizationOptions> Options { get; }
 
     public OpaPolicyHandler(
         IOpaPolicyService service,
@@ -20,16 +23,35 @@ public class OpaPolicyHandler : AuthorizationHandler<OpaPolicyRequirement>
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(logger);
 
-        _service = service;
-        _options = options;
-        _logger = logger;
+        Service = service;
+        Options = options;
+        Logger = logger;
+    }
+
+    protected virtual Task HandleRequirementAsync(
+        AuthorizationHandlerContext context,
+        OpaPolicyRequirement requirement,
+        IHttpRequestPolicyInput resource)
+    {
+        Logger.LogDebug("Evaluating policy");
+        var result = Service.EvaluatePredicate(resource, requirement.Entrypoint);
+
+        if (!result)
+            Logger.LogDebug("Authorization policy denied");
+        else
+        {
+            Logger.LogDebug("Authorization policy succeeded");
+            context.Succeed(requirement);
+        }
+
+        return Task.CompletedTask;
     }
 
     protected override Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
         OpaPolicyRequirement requirement)
     {
-        using var scope = _logger.BeginScope(new { requirement.Entrypoint });
+        using var scope = Logger.BeginScope(new { requirement.Entrypoint });
 
         try
         {
@@ -47,24 +69,15 @@ public class OpaPolicyHandler : AuthorizationHandler<OpaPolicyRequirement>
 
             var input = new HttpRequestPolicyInput(
                 request,
-                _options.Value.AllowedHeaders,
-                _options.Value.IncludeClaimsInHttpRequest ? context.User.Claims : null
+                Options.Value.AllowedHeaders,
+                Options.Value.IncludeClaimsInHttpRequest ? context.User.Claims : null
                 );
 
-            _logger.LogDebug("Evaluating policy");
-            var result = _service.EvaluatePredicate(input, requirement.Entrypoint);
-
-            if (!result)
-                _logger.LogDebug("Authorization policy denied");
-            else
-            {
-                _logger.LogDebug("Authorization policy succeeded");
-                context.Succeed(requirement);
-            }
+            return HandleRequirementAsync(context, requirement, input);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Authorization policy failed");
+            Logger.LogError(ex, "Authorization policy failed");
         }
 
         return Task.CompletedTask;

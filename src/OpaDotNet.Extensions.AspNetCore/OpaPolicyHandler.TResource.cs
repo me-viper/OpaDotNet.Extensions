@@ -1,18 +1,21 @@
-﻿namespace OpaDotNet.Extensions.AspNetCore;
+﻿using JetBrains.Annotations;
 
+namespace OpaDotNet.Extensions.AspNetCore;
+
+[PublicAPI]
 public class OpaPolicyHandler<TResource> : AuthorizationHandler<OpaPolicyRequirement, TResource>
 {
-    private readonly IOpaPolicyService _service;
+    protected IOpaPolicyService Service { get; }
 
-    private readonly ILogger _logger;
+    protected ILogger Logger { get; }
 
     public OpaPolicyHandler(IOpaPolicyService service, ILogger<OpaPolicyHandler<TResource>> logger)
     {
         ArgumentNullException.ThrowIfNull(service);
         ArgumentNullException.ThrowIfNull(logger);
 
-        _service = service;
-        _logger = logger;
+        Service = service;
+        Logger = logger;
     }
 
     protected override Task HandleRequirementAsync(
@@ -20,24 +23,24 @@ public class OpaPolicyHandler<TResource> : AuthorizationHandler<OpaPolicyRequire
         OpaPolicyRequirement requirement,
         TResource resource)
     {
-        using var scope = _logger.BeginScope(new { requirement.Entrypoint });
+        using var scope = Logger.BeginScope(new { requirement.Entrypoint });
 
         try
         {
-            _logger.LogDebug("Evaluating policy");
-            var result = _service.EvaluatePredicate(resource, requirement.Entrypoint);
+            Logger.LogDebug("Evaluating policy");
+            var result = Service.EvaluatePredicate(resource, requirement.Entrypoint);
 
             if (!result)
-                _logger.LogDebug("Failed");
+                Logger.LogDebug("Failed");
             else
             {
-                _logger.LogDebug("Success");
+                Logger.LogDebug("Success");
                 context.Succeed(requirement);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Authorization policy failed");
+            Logger.LogError(ex, "Authorization policy failed");
         }
 
         return Task.CompletedTask;
