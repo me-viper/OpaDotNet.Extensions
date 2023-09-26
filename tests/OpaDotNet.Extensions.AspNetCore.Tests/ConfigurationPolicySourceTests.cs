@@ -28,6 +28,25 @@ public class ConfigurationPolicySourceTests
 
     private record UserPolicyInput([UsedImplicitly] string User);
 
+    [Fact]
+    public async Task NoPolicies()
+    {
+        var policyOptions = new OpaPolicyOptions();
+        var optionsMonitor = new PolicyOptionsMonitor(policyOptions);
+
+        using var compiler = new ConfigurationPolicySource(
+            new RegoInteropCompiler(
+                null,
+                _loggerFactory.CreateLogger<RegoInteropCompiler>()
+                ),
+            new OptionsWrapper<OpaAuthorizationOptions>(new()),
+            optionsMonitor,
+            _loggerFactory
+            );
+
+        await Assert.ThrowsAsync<RegoCompilationException>(() => compiler.StartAsync(CancellationToken.None));
+    }
+
     [Theory]
     [InlineData(2, "p1/t1/allow")]
     [InlineData(3, "p2/allow")]

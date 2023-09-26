@@ -40,6 +40,7 @@ public class ConfigurationPolicySource : OpaPolicySource
     /// <inheritdoc />
     protected override async Task<Stream?> CompileBundleFromSource(bool recompiling, CancellationToken cancellationToken = default)
     {
+        var hasSources = false;
         using var ms = new MemoryStream();
         var bundleWriter = new BundleWriter(ms);
 
@@ -48,15 +49,21 @@ public class ConfigurationPolicySource : OpaPolicySource
             foreach (var (name, policy) in _policy.CurrentValue)
             {
                 if (!string.IsNullOrWhiteSpace(policy.DataJson))
-                    bundleWriter.WriteEntry(policy.DataJson, $"{policy.Package}/data.json");
+                    bundleWriter.WriteEntry(policy.DataJson, $"/{policy.Package}/data.json");
 
                 if (!string.IsNullOrWhiteSpace(policy.DataYaml))
-                    bundleWriter.WriteEntry(policy.DataYaml, $"{policy.Package}/data.yaml");
+                    bundleWriter.WriteEntry(policy.DataYaml, $"/{policy.Package}/data.yaml");
 
                 if (!string.IsNullOrWhiteSpace(policy.Source))
+                {
+                    hasSources = true;
                     bundleWriter.WriteEntry(policy.Source, $"/{policy.Package}/{name}.rego");
+                }
             }
         }
+
+        if (!hasSources)
+            throw new RegoCompilationException("Configuration has no policies defined");
 
         ms.Seek(0, SeekOrigin.Begin);
 
