@@ -48,6 +48,18 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
+    public static IOpaAuthorizationBuilder AddConfiguration(
+        this IOpaAuthorizationBuilder builder,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        builder.Services.Configure<OpaAuthorizationOptions>(configuration);
+
+        return builder;
+    }
+
     public static IOpaAuthorizationBuilder AddCompiler<TCompiler, TOptions>(
         this IOpaAuthorizationBuilder builder,
         Action<TOptions> configuration,

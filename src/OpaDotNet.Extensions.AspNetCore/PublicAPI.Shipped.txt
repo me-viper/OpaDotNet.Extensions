@@ -116,3 +116,4 @@ OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.Service.get -> OpaDotNet.Extens
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>.Logger.get -> Microsoft.Extensions.Logging.ILogger!
 OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>.Service.get -> OpaDotNet.Extensions.AspNetCore.IOpaPolicyService!
 virtual OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement, OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput! resource) -> System.Threading.Tasks.Task!
+static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddConfiguration(this OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder! builder, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!
