@@ -38,7 +38,6 @@ OpaDotNet.Extensions.AspNetCore.OpaPolicyDefinitionOptions.DataJson.get -> strin
 OpaDotNet.Extensions.AspNetCore.OpaPolicyDefinitionOptions.DataJson.set -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyDefinitionOptions.DataYaml.get -> string?
 OpaDotNet.Extensions.AspNetCore.OpaPolicyDefinitionOptions.DataYaml.set -> void
-OpaDotNet.Extensions.AspNetCore.OpaPolicyDefinitionOptions.OpaPolicyDefinitionOptions() -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyDefinitionOptions.Package.get -> string?
 OpaDotNet.Extensions.AspNetCore.OpaPolicyDefinitionOptions.Package.set -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyDefinitionOptions.Source.get -> string?

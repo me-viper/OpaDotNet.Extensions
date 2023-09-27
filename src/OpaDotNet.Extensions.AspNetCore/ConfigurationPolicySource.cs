@@ -9,9 +9,9 @@ namespace OpaDotNet.Extensions.AspNetCore;
 [UsedImplicitly]
 public class ConfigurationPolicySource : OpaPolicySource
 {
-    private readonly IOptionsMonitor<OpaPolicyOptions> _policy;
-
     private readonly IDisposable? _policyChangeMonitor;
+
+    private OpaPolicyOptions _opts;
 
     public ConfigurationPolicySource(
         IRegoCompiler compiler,
@@ -21,12 +21,19 @@ public class ConfigurationPolicySource : OpaPolicySource
     {
         ArgumentNullException.ThrowIfNull(policy);
 
-        _policy = policy;
-        _policyChangeMonitor = _policy.OnChange(
-            _ =>
+        _opts = policy.CurrentValue;
+        _policyChangeMonitor = policy.OnChange(
+            p =>
             {
                 try
                 {
+                    if (!HasChanged(p, _opts))
+                    {
+                        Logger.LogDebug("No changes in policies configuration");
+                        return;
+                    }
+
+                    _opts = p;
                     Task.Run(() => CompileBundle(true)).ConfigureAwait(false);
                 }
                 catch (Exception)
@@ -35,6 +42,26 @@ public class ConfigurationPolicySource : OpaPolicySource
                 }
             }
             );
+    }
+
+    private static bool HasChanged(OpaPolicyOptions a, OpaPolicyOptions b)
+    {
+        if (ReferenceEquals(a, b))
+            return false;
+
+        if (a.Keys.Count != b.Keys.Count)
+            return true;
+
+        foreach (var (k, v) in a)
+        {
+            if (!b.TryGetValue(k, out var ov))
+                return true;
+
+            if (!v.Equals(ov))
+                return true;
+        }
+
+        return false;
     }
 
     /// <inheritdoc />
@@ -46,7 +73,7 @@ public class ConfigurationPolicySource : OpaPolicySource
 
         await using (bundleWriter.ConfigureAwait(false))
         {
-            foreach (var (name, policy) in _policy.CurrentValue)
+            foreach (var (name, policy) in _opts)
             {
                 if (!string.IsNullOrWhiteSpace(policy.DataJson))
                     bundleWriter.WriteEntry(policy.DataJson, $"/{policy.Package}/data.json");

@@ -185,8 +185,8 @@ public class ConfigurationPolicySourceTests
             _output.WriteLine($"Checking: u{i}");
             Assert.True(result.Result);
 
-            policyOptions["p1"].Source = Policy(i + 1);
-            optionsMonitor.Change(policyOptions);
+            var newOpts = new OpaPolicyOptions { { "p1", new() { Source = Policy(i + 1) } } };
+            optionsMonitor.Change(newOpts);
 
             await Task.Delay(TimeSpan.FromSeconds(5));
         }

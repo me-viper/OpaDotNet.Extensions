@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 namespace OpaDotNet.Extensions.AspNetCore;
 
 [UsedImplicitly]
-public class OpaPolicyDefinitionOptions
+public record OpaPolicyDefinitionOptions
 {
     [UsedImplicitly]
     public string? Package { get; set; }
