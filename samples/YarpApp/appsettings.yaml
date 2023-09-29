@@ -12,6 +12,7 @@
       # METADATA
       # description: This policy never denies
       deny if {
+        print("This policy never denies", "Input:", input)
         false
       }
 
@@ -25,6 +26,7 @@
       # METADATA
       # description: This policy always denies
       deny[format(rego.metadata.rule())] {
+        print("This policy always denies")
         true
       }
 
@@ -40,6 +42,7 @@
       # METADATA
       # description: Path is not allowed
       deny[format(rego.metadata.rule())] {
+        print("Path:", input.path)
         not startswith(input.path, "/path/allow")
       }
 

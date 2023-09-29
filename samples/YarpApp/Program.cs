@@ -25,7 +25,7 @@ builder.Services.AddOpaAuthorization(
 
         // Get policies from the configuration.
         cfg.AddConfigurationPolicySource(builder.Configuration.GetSection("policies"));
-        cfg.AddConfiguration(builder.Configuration.GetSection("Opa").Bind);
+        cfg.AddConfiguration(builder.Configuration.GetSection("Opa"));
         cfg.AddJsonOptions(p => p.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
     }
     );

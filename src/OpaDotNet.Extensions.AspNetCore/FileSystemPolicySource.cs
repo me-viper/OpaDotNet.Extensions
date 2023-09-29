@@ -19,7 +19,8 @@ public sealed class FileSystemPolicySource : OpaPolicySource
     public FileSystemPolicySource(
         IRegoCompiler compiler,
         IOptions<OpaAuthorizationOptions> options,
-        ILoggerFactory loggerFactory) : base(compiler, options, loggerFactory)
+        IOpaImportsAbiFactory importsAbiFactory,
+        ILoggerFactory loggerFactory) : base(compiler, options, importsAbiFactory, loggerFactory)
     {
         if (string.IsNullOrWhiteSpace(options.Value.PolicyBundlePath))
             throw new InvalidOperationException("Compiler requires OpaAuthorizationOptions.PolicyBundlePath specified");

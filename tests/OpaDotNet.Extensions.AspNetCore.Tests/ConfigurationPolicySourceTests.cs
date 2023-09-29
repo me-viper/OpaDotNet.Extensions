@@ -41,6 +41,7 @@ public class ConfigurationPolicySourceTests
                 ),
             new OptionsWrapper<OpaAuthorizationOptions>(new()),
             optionsMonitor,
+            new OpaImportsAbiFactory(),
             _loggerFactory
             );
 
@@ -125,6 +126,7 @@ public class ConfigurationPolicySourceTests
                 ),
             new OptionsWrapper<OpaAuthorizationOptions>(opts),
             optionsMonitor,
+            new OpaImportsAbiFactory(),
             _loggerFactory
             );
 
@@ -172,6 +174,7 @@ public class ConfigurationPolicySourceTests
             new RegoInteropCompiler(),
             new OptionsWrapper<OpaAuthorizationOptions>(opts),
             optionsMonitor,
+            new OpaImportsAbiFactory(),
             _loggerFactory
             );
 

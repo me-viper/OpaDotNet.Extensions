@@ -38,6 +38,9 @@ public abstract class OpaPolicySource : IOpaPolicySource
     /// </summary>
     protected IOptions<OpaAuthorizationOptions> Options { get; }
 
+    [PublicAPI]
+    protected IOpaImportsAbiFactory ImportsAbiFactory { get; }
+
     private OpaEvaluatorFactory? _factory;
 
     /// <inheritdoc />
@@ -52,6 +55,7 @@ public abstract class OpaPolicySource : IOpaPolicySource
     protected OpaPolicySource(
         IRegoCompiler compiler,
         IOptions<OpaAuthorizationOptions> options,
+        IOpaImportsAbiFactory importsAbiFactory,
         ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(compiler);
@@ -60,6 +64,7 @@ public abstract class OpaPolicySource : IOpaPolicySource
 
         Compiler = compiler;
         Options = options;
+        ImportsAbiFactory = importsAbiFactory;
         LoggerFactory = loggerFactory;
 
         Logger = LoggerFactory.CreateLogger<OpaPolicySource>();
@@ -108,8 +113,9 @@ public abstract class OpaPolicySource : IOpaPolicySource
 
             _factory = new OpaBundleEvaluatorFactory(
                 policy,
-                loggerFactory: LoggerFactory,
-                options: Options.Value.EngineOptions
+                Options.Value.EngineOptions,
+                ImportsAbiFactory.ImportsAbi,
+                LoggerFactory
                 );
 
             oldFactory?.Dispose();

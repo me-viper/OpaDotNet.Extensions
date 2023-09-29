@@ -47,6 +47,7 @@ public class FileSystemPolicySourceTests
         using var compiler = new FileSystemPolicySource(
             new RegoInteropCompiler(),
             new OptionsWrapper<OpaAuthorizationOptions>(opts),
+            new OpaImportsAbiFactory(),
             _loggerFactory
             );
 
@@ -82,6 +83,7 @@ public class FileSystemPolicySourceTests
         using var compiler = new FileSystemPolicySource(
             new RegoInteropCompiler(),
             new OptionsWrapper<OpaAuthorizationOptions>(opts),
+            new OpaImportsAbiFactory(),
             _loggerFactory
             );
 

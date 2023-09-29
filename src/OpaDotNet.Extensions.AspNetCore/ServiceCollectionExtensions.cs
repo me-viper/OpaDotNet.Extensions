@@ -60,6 +60,19 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
+    public static IOpaAuthorizationBuilder AddImportsAbi<T>(this IOpaAuthorizationBuilder builder)
+        where T : DefaultOpaImportsAbi
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder.Services.AddTransient<IOpaImportsAbi, T>();
+        builder.Services.TryAddTransient<IOpaImportsAbiFactory>(
+            p => new OpaImportsAbiFactory(p.GetRequiredService<IOpaImportsAbi>)
+            );
+
+        return builder;
+    }
+
     public static IOpaAuthorizationBuilder AddCompiler<TCompiler, TOptions>(
         this IOpaAuthorizationBuilder builder,
         Action<TOptions> configuration,
@@ -158,6 +171,8 @@ public static class ServiceCollectionExtensions
 
         services.AddOpaAuthorization();
         configure(new OpaAuthorizationBuilder(services));
+
+        services.TryAddTransient<IOpaImportsAbiFactory>(_ => new OpaImportsAbiFactory());
 
         return services;
     }

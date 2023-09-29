@@ -43,6 +43,7 @@ public class OpaPolicyServiceTests
         var compiler = new FileSystemPolicySource(
             new RegoInteropCompiler(),
             opts,
+            new OpaImportsAbiFactory(),
             _loggerFactory
             );
 

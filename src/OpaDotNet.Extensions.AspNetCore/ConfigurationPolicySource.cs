@@ -17,7 +17,8 @@ public class ConfigurationPolicySource : OpaPolicySource
         IRegoCompiler compiler,
         IOptions<OpaAuthorizationOptions> authOptions,
         IOptionsMonitor<OpaPolicyOptions> policy,
-        ILoggerFactory loggerFactory) : base(compiler, authOptions, loggerFactory)
+        IOpaImportsAbiFactory importsAbiFactory,
+        ILoggerFactory loggerFactory) : base(compiler, authOptions, importsAbiFactory, loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(policy);
 
