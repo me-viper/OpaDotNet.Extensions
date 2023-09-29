@@ -13,6 +13,7 @@
 * Improve changes detection to avoid unneeded recompilation ([b767367](https://github.com/me-viper/OpaDotNet.Extensions/commit/b7673672e522a3f43023c1ccf1f54910f051299e))
 * Improve PolicyHandler extensibility ([8c88c27](https://github.com/me-viper/OpaDotNet.Extensions/commit/8c88c272332729abe5afe19312ca150a3d8eb1b5))
 * Update dependencies ([c4ed3d4](https://github.com/me-viper/OpaDotNet.Extensions/commit/c4ed3d42c42ea3f4298ecb79548cc03936d2d4fb))
+* Support custom ABI imports ([3f16d5a](https://github.com/me-viper/OpaDotNet.Extensions/commit/3f16d5abd851a53f47bd847153b7d25ebb6817e6))
 
 ## OpaDotNet.Extensions v1.1.0 (2023-08-18)
 
