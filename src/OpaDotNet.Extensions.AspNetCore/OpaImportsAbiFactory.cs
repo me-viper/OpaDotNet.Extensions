@@ -8,7 +8,7 @@ internal class OpaImportsAbiFactory : IOpaImportsAbiFactory
 
     internal OpaImportsAbiFactory()
     {
-        ImportsAbi = () => new DefaultImportsAbi();
+        ImportsAbi = () => new CoreImportsAbi();
     }
 
     public OpaImportsAbiFactory(Func<IOpaImportsAbi> importsAbi)

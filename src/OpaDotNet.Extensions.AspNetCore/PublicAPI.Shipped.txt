@@ -9,8 +9,8 @@ OpaDotNet.Extensions.AspNetCore.ClaimPolicyInput.Value.get -> string!
 OpaDotNet.Extensions.AspNetCore.ClaimPolicyInput.Value.init -> void
 OpaDotNet.Extensions.AspNetCore.ConfigurationPolicySource
 OpaDotNet.Extensions.AspNetCore.ConfigurationPolicySource.ConfigurationPolicySource(OpaDotNet.Compilation.Abstractions.IRegoCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! authOptions, Microsoft.Extensions.Options.IOptionsMonitor<OpaDotNet.Extensions.AspNetCore.OpaPolicyOptions!>! policy, OpaDotNet.Extensions.AspNetCore.IOpaImportsAbiFactory! importsAbiFactory, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
-OpaDotNet.Extensions.AspNetCore.DefaultImportsAbi
-OpaDotNet.Extensions.AspNetCore.DefaultImportsAbi.DefaultImportsAbi(Microsoft.Extensions.Logging.ILogger<OpaDotNet.Extensions.AspNetCore.DefaultImportsAbi!>? logger = null) -> void
+OpaDotNet.Extensions.AspNetCore.CoreImportsAbi
+OpaDotNet.Extensions.AspNetCore.CoreImportsAbi.CoreImportsAbi(Microsoft.Extensions.Logging.ILogger<OpaDotNet.Extensions.AspNetCore.CoreImportsAbi!>? logger = null) -> void
 OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource
 OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource.FileSystemPolicySource(OpaDotNet.Compilation.Abstractions.IRegoCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! options, OpaDotNet.Extensions.AspNetCore.IOpaImportsAbiFactory! importsAbiFactory, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 OpaDotNet.Extensions.AspNetCore.IConnectionInput
@@ -103,10 +103,10 @@ OpaDotNet.Extensions.AspNetCore.OpaPolicySource.Options.get -> Microsoft.Extensi
 OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions
 override OpaDotNet.Extensions.AspNetCore.ConfigurationPolicySource.CompileBundleFromSource(bool recompiling, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.IO.Stream?>!
 override OpaDotNet.Extensions.AspNetCore.ConfigurationPolicySource.Dispose(bool disposing) -> void
-override OpaDotNet.Extensions.AspNetCore.DefaultImportsAbi.OnError(OpaDotNet.Wasm.BuiltinContext! context, System.Exception! ex) -> bool
-override OpaDotNet.Extensions.AspNetCore.DefaultImportsAbi.Print(System.Collections.Generic.IEnumerable<string!>! args) -> void
-override OpaDotNet.Extensions.AspNetCore.DefaultImportsAbi.PrintLn(string! message) -> void
-override OpaDotNet.Extensions.AspNetCore.DefaultImportsAbi.Trace(string! message) -> bool
+override OpaDotNet.Extensions.AspNetCore.CoreImportsAbi.OnError(OpaDotNet.Wasm.BuiltinContext! context, System.Exception! ex) -> bool
+override OpaDotNet.Extensions.AspNetCore.CoreImportsAbi.Print(System.Collections.Generic.IEnumerable<string!>! args) -> void
+override OpaDotNet.Extensions.AspNetCore.CoreImportsAbi.PrintLn(string! message) -> void
+override OpaDotNet.Extensions.AspNetCore.CoreImportsAbi.Trace(string! message) -> bool
 override OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource.StartAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 override OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource.StopAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement) -> System.Threading.Tasks.Task!

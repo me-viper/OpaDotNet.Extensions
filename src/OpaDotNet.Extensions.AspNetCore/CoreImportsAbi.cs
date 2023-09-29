@@ -2,13 +2,13 @@
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
-public class DefaultImportsAbi : DefaultOpaImportsAbi
+public class CoreImportsAbi : DefaultOpaImportsAbi
 {
     private readonly ILogger _logger;
 
-    public DefaultImportsAbi(ILogger<DefaultImportsAbi>? logger = null)
+    public CoreImportsAbi(ILogger<CoreImportsAbi>? logger = null)
     {
-        _logger = logger ?? NullLogger<DefaultImportsAbi>.Instance;
+        _logger = logger ?? NullLogger<CoreImportsAbi>.Instance;
     }
 
     public override void PrintLn(string message)

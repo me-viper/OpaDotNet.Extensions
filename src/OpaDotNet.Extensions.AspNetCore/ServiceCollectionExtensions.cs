@@ -66,7 +66,7 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(builder);
 
         builder.Services.AddTransient<IOpaImportsAbi, T>();
-        builder.Services.TryAddTransient<IOpaImportsAbiFactory>(
+        builder.Services.AddSingleton<IOpaImportsAbiFactory>(
             p => new OpaImportsAbiFactory(p.GetRequiredService<IOpaImportsAbi>)
             );
 
@@ -172,7 +172,10 @@ public static class ServiceCollectionExtensions
         services.AddOpaAuthorization();
         configure(new OpaAuthorizationBuilder(services));
 
-        services.TryAddTransient<IOpaImportsAbiFactory>(_ => new OpaImportsAbiFactory());
+        services.TryAddTransient<IOpaImportsAbi, CoreImportsAbi>();
+        services.TryAddSingleton<IOpaImportsAbiFactory>(
+            p => new OpaImportsAbiFactory(p.GetRequiredService<IOpaImportsAbi>)
+            );
 
         return services;
     }
