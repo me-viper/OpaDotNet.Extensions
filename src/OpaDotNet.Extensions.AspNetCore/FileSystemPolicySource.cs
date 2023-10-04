@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Physical;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 
 using OpaDotNet.Compilation.Abstractions;
 
@@ -6,7 +9,7 @@ namespace OpaDotNet.Extensions.AspNetCore;
 
 public sealed class FileSystemPolicySource : OpaPolicySource
 {
-    private readonly FileSystemWatcher _policyWatcher;
+    private readonly IDisposable? _policyWatcher;
 
     private readonly PeriodicTimer? _changesMonitor;
 
@@ -25,18 +28,26 @@ public sealed class FileSystemPolicySource : OpaPolicySource
         if (string.IsNullOrWhiteSpace(options.Value.PolicyBundlePath))
             throw new InvalidOperationException("Compiler requires OpaAuthorizationOptions.PolicyBundlePath specified");
 
-        _policyWatcher = new()
-        {
-            Path = Options.Value.PolicyBundlePath!,
-            Filters = { "*.rego", "data.json", "data.yaml" },
-            NotifyFilter = NotifyFilters.LastWrite,
-            IncludeSubdirectories = true,
-        };
+        var path = Options.Value.PolicyBundlePath!;
+
+        if (!Path.IsPathRooted(Options.Value.PolicyBundlePath!))
+            path = Path.GetFullPath(Options.Value.PolicyBundlePath!);
+
+        var fileProvider = new PhysicalFileProvider(
+            path,
+            ExclusionFilters.Sensitive
+            );
 
         if (MonitoringEnabled)
         {
-            _policyWatcher.Changed += PolicyChanged;
+            _policyWatcher = ChangeToken.OnChange(() => fileProvider.Watch("**/*.*"), OnPolicyChange);
             _changesMonitor = new(Options.Value.MonitoringInterval);
+        }
+
+        void OnPolicyChange()
+        {
+            Logger.LogDebug("Detected changes in policy");
+            _needsRecompilation = true;
         }
     }
 
@@ -47,20 +58,6 @@ public sealed class FileSystemPolicySource : OpaPolicySource
             cancellationToken: cancellationToken,
             entrypoints: Options.Value.Entrypoints
             ).ConfigureAwait(false);
-    }
-
-    private void PolicyChanged(object sender, FileSystemEventArgs e)
-    {
-        if (_cancellationTokenSource.Token.IsCancellationRequested)
-            return;
-
-        Logger.LogDebug(
-            "Detected policy change {Change} in {File}. Stashing until next recompilation cycle",
-            e.ChangeType,
-            e.FullPath
-            );
-
-        _needsRecompilation = true;
     }
 
     private async Task TrackPolicyChanged(CancellationToken cancellationToken)
@@ -103,7 +100,7 @@ public sealed class FileSystemPolicySource : OpaPolicySource
             if (disposing)
             {
                 _changesMonitor?.Dispose();
-                _policyWatcher.Dispose();
+                _policyWatcher?.Dispose();
                 _cancellationTokenSource.Dispose();
             }
         }
@@ -120,7 +117,6 @@ public sealed class FileSystemPolicySource : OpaPolicySource
 
         if (MonitoringEnabled)
         {
-            _policyWatcher.EnableRaisingEvents = true;
             _ = Task.Run(() => TrackPolicyChanged(_cancellationTokenSource.Token), cancellationToken);
         }
     }
@@ -130,7 +126,6 @@ public sealed class FileSystemPolicySource : OpaPolicySource
     {
         await base.StopAsync(cancellationToken).ConfigureAwait(false);
 
-        _policyWatcher.EnableRaisingEvents = false;
         _cancellationTokenSource.Cancel();
         Logger.LogDebug("Stopped");
     }

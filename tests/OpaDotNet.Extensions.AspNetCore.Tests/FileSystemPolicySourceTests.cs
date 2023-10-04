@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace OpaDotNet.Extensions.AspNetCore.Tests;
 
-public class FileSystemPolicySourceTests
+public sealed class FileSystemPolicySourceTests : IDisposable
 {
     private readonly ITestOutputHelper _output;
 
@@ -23,6 +23,12 @@ public class FileSystemPolicySourceTests
     {
         _output = output;
         _loggerFactory = new LoggerFactory(new[] { new XunitLoggerProvider(output) });
+        Environment.SetEnvironmentVariable("DOTNET_USE_POLLING_FILE_WATCHER", null);
+    }
+
+    public void Dispose()
+    {
+        Environment.SetEnvironmentVariable("DOTNET_USE_POLLING_FILE_WATCHER", null);
     }
 
     private record UserPolicyInput([UsedImplicitly] string User);
@@ -62,8 +68,10 @@ public class FileSystemPolicySourceTests
         await compiler.StopAsync(CancellationToken.None);
     }
 
-    [Fact]
-    public async Task WatchChanges()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task WatchChanges(bool usePolingWatcher)
     {
         var opts = new OpaAuthorizationOptions
         {
@@ -80,28 +88,38 @@ public class FileSystemPolicySourceTests
 
         await File.WriteAllTextAsync("./Watch/policy.rego", Policy(0));
 
-        using var compiler = new FileSystemPolicySource(
+        if (usePolingWatcher)
+            Environment.SetEnvironmentVariable("DOTNET_USE_POLLING_FILE_WATCHER", "1");
+        else
+            Environment.SetEnvironmentVariable("DOTNET_USE_POLLING_FILE_WATCHER", "0");
+
+        using var source = new FileSystemPolicySource(
             new RegoInteropCompiler(),
             new OptionsWrapper<OpaAuthorizationOptions>(opts),
             new OpaImportsAbiFactory(),
             _loggerFactory
             );
 
-        await compiler.StartAsync(CancellationToken.None);
+        await source.StartAsync(CancellationToken.None);
+        using var iterate = new AutoResetEvent(false);
 
         for (var i = 0; i < 3; i++)
         {
-            var eval = compiler.CreateEvaluator();
+            using var eval = source.CreateEvaluator();
             var result = eval.EvaluatePredicate(new UserPolicyInput($"u{i}"));
 
             _output.WriteLine($"Checking: u{i}");
             Assert.True(result.Result);
 
             await File.WriteAllTextAsync("./Watch/policy.rego", Policy(i + 1));
-            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            var token = source.OnPolicyUpdated();
+            using var _ = token.RegisterChangeCallback(_ => iterate.Set(), null);
+
+            iterate.WaitOne(TimeSpan.FromSeconds(10));
         }
 
-        await compiler.StopAsync(CancellationToken.None);
+        await source.StopAsync(CancellationToken.None);
     }
 
     private static string Policy(int i)
