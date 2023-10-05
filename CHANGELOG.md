@@ -6,6 +6,7 @@
 
 * Fail if configuration has no policies ([948464c](https://github.com/me-viper/OpaDotNet.Extensions/commit/948464c540c3618f38114f27e94f38c40de2a4f9))
 * Fix building bundles from configuration ([ada70b6](https://github.com/me-viper/OpaDotNet.Extensions/commit/ada70b6e0ddc23335409d892acd4228949f5c5e7))
+* Fix file system monitoring in kubernetes ([4033f54](https://github.com/me-viper/OpaDotNet.Extensions/commit/4033f545815d3e1429b8275d67afdf65d1f06ec4))
 
 ## Features
 

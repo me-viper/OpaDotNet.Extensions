@@ -95,13 +95,31 @@ public class ConfigurationPolicySource : OpaPolicySource
 
         ms.Seek(0, SeekOrigin.Begin);
 
-        var result = await Compiler.CompileStream(
-            ms,
-            entrypoints: Options.Value.Entrypoints,
-            cancellationToken: cancellationToken
-            ).ConfigureAwait(false);
+        Stream? capsStream = null;
 
-        return result;
+        try
+        {
+            if (ImportsAbiFactory.Capabilities != null)
+                capsStream = ImportsAbiFactory.Capabilities.Invoke();
+
+            var result = await Compiler.Compile(
+                ms,
+                new()
+                {
+                    IsBundle = true,
+                    Entrypoints = Options.Value.Entrypoints,
+                    CapabilitiesStream = capsStream,
+                },
+                cancellationToken: cancellationToken
+                ).ConfigureAwait(false);
+
+            return result;
+        }
+        finally
+        {
+            if (capsStream != null)
+                await capsStream.DisposeAsync().ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc />

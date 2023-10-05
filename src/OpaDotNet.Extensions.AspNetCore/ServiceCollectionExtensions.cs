@@ -61,13 +61,47 @@ public static class ServiceCollectionExtensions
     }
 
     public static IOpaAuthorizationBuilder AddImportsAbi<T>(this IOpaAuthorizationBuilder builder)
-        where T : DefaultOpaImportsAbi
+        where T : class, IOpaImportsAbi
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         builder.Services.AddTransient<IOpaImportsAbi, T>();
+
+        if (typeof(T).IsAssignableTo(typeof(ICapabilitiesProvider)))
+        {
+            builder.AddImportsAbi<T>(
+                p =>
+                {
+                    var abi = p.GetRequiredService<IOpaImportsAbi>();
+
+                    if (abi is ICapabilitiesProvider cp)
+                        return cp.GetCapabilities();
+
+                    throw new InvalidOperationException($"Type {typeof(T)} does not implement {typeof(ICapabilitiesProvider)}");
+                }
+                );
+        }
+        else
+        {
+            builder.Services.AddSingleton<IOpaImportsAbiFactory>(
+                p => new OpaImportsAbiFactory(p.GetRequiredService<IOpaImportsAbi>)
+                );
+        }
+
+        return builder;
+    }
+
+    public static IOpaAuthorizationBuilder AddImportsAbi<T>(
+        this IOpaAuthorizationBuilder builder,
+        Func<IServiceProvider, Stream> capabilities)
+        where T : class, IOpaImportsAbi
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(capabilities);
+
+        builder.Services.AddTransient<IOpaImportsAbi, T>();
         builder.Services.AddSingleton<IOpaImportsAbiFactory>(
-            p => new OpaImportsAbiFactory(p.GetRequiredService<IOpaImportsAbi>)
+            p => new OpaImportsAbiFactory(p.GetRequiredService<IOpaImportsAbi>, () => capabilities(p))
             );
 
         return builder;

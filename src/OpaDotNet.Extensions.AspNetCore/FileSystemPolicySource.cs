@@ -40,24 +40,51 @@ public sealed class FileSystemPolicySource : OpaPolicySource
 
         if (MonitoringEnabled)
         {
-            _policyWatcher = ChangeToken.OnChange(() => fileProvider.Watch("**/*.*"), OnPolicyChange);
-            _changesMonitor = new(Options.Value.MonitoringInterval);
-        }
+            CompositeChangeToken MakePolicyChangeToken() => new(
+                new[]
+                {
+                    fileProvider.Watch("**/*.rego"),
+                    fileProvider.Watch("**/data.json"),
+                    fileProvider.Watch("**/data.yaml"),
+                }
+                );
 
-        void OnPolicyChange()
-        {
-            Logger.LogDebug("Detected changes in policy");
-            _needsRecompilation = true;
+            void OnPolicyChange()
+            {
+                Logger.LogDebug("Detected changes in policy");
+                _needsRecompilation = true;
+            }
+
+            _policyWatcher = ChangeToken.OnChange(MakePolicyChangeToken, OnPolicyChange);
+            _changesMonitor = new(Options.Value.MonitoringInterval);
         }
     }
 
     protected override async Task<Stream?> CompileBundleFromSource(bool recompiling, CancellationToken cancellationToken = default)
     {
-        return await Compiler.CompileBundle(
-            Options.Value.PolicyBundlePath!,
-            cancellationToken: cancellationToken,
-            entrypoints: Options.Value.Entrypoints
-            ).ConfigureAwait(false);
+        Stream? capsStream = null;
+
+        try
+        {
+            if (ImportsAbiFactory.Capabilities != null)
+                capsStream = ImportsAbiFactory.Capabilities();
+
+            return await Compiler.Compile(
+                Options.Value.PolicyBundlePath!,
+                new()
+                {
+                    IsBundle = true,
+                    Entrypoints = Options.Value.Entrypoints,
+                    CapabilitiesStream = capsStream,
+                },
+                cancellationToken: cancellationToken
+                ).ConfigureAwait(false);
+        }
+        finally
+        {
+            if (capsStream != null)
+                await capsStream.DisposeAsync().ConfigureAwait(false);
+        }
     }
 
     private async Task TrackPolicyChanged(CancellationToken cancellationToken)
