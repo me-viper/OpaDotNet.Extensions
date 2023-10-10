@@ -1,2 +1,1 @@
 #nullable enable
-OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource.FileSystemPolicySource(OpaDotNet.Compilation.Abstractions.IRegoCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! options, OpaDotNet.Extensions.AspNetCore.IOpaImportsAbiFactory! importsAbiFactory, Microsoft.Extensions.Options.IOptions<OpaDotNet.Compilation.Abstractions.RegoCompilerOptions!>! compilerOptions, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
