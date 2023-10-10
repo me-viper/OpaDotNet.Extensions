@@ -19,16 +19,22 @@ public sealed class FileSystemPolicySource : OpaPolicySource
 
     private bool MonitoringEnabled => Options.Value.MonitoringInterval > TimeSpan.Zero;
 
+    private readonly IOptions<RegoCompilerOptions> _compilerOptions;
+
     public FileSystemPolicySource(
         IRegoCompiler compiler,
         IOptions<OpaAuthorizationOptions> options,
         IOpaImportsAbiFactory importsAbiFactory,
+        IOptions<RegoCompilerOptions> compilerOptions,
         ILoggerFactory loggerFactory) : base(compiler, options, importsAbiFactory, loggerFactory)
     {
+        ArgumentNullException.ThrowIfNull(compilerOptions);
+
         if (string.IsNullOrWhiteSpace(options.Value.PolicyBundlePath))
             throw new InvalidOperationException("Compiler requires OpaAuthorizationOptions.PolicyBundlePath specified");
 
         var path = Options.Value.PolicyBundlePath!;
+        _compilerOptions = compilerOptions;
 
         if (!Path.IsPathRooted(Options.Value.PolicyBundlePath!))
             path = Path.GetFullPath(Options.Value.PolicyBundlePath!);
@@ -69,16 +75,36 @@ public sealed class FileSystemPolicySource : OpaPolicySource
             if (ImportsAbiFactory.Capabilities != null)
                 capsStream = ImportsAbiFactory.Capabilities();
 
-            return await Compiler.Compile(
-                Options.Value.PolicyBundlePath!,
-                new()
-                {
-                    IsBundle = true,
-                    Entrypoints = Options.Value.Entrypoints,
-                    CapabilitiesStream = capsStream,
-                },
-                cancellationToken: cancellationToken
-                ).ConfigureAwait(false);
+            var parameters = new CompilationParameters
+            {
+                IsBundle = true,
+                Entrypoints = Options.Value.Entrypoints,
+                CapabilitiesStream = capsStream,
+            };
+
+            if (!Options.Value.ForceBundleWriter)
+            {
+                return await Compiler.Compile(
+                    Options.Value.PolicyBundlePath!,
+                    parameters,
+                    cancellationToken: cancellationToken
+                    ).ConfigureAwait(false);
+            }
+            else
+            {
+                using var ms = new MemoryStream();
+
+                var bundle = BundleWriter.FromDirectory(
+                    ms,
+                    Options.Value.PolicyBundlePath!,
+                    _compilerOptions.Value.Ignore
+                    );
+
+                await bundle.DisposeAsync().ConfigureAwait(false);
+                ms.Seek(0, SeekOrigin.Begin);
+
+                return await Compiler.Compile(ms, parameters, cancellationToken).ConfigureAwait(false);
+            }
         }
         finally
         {

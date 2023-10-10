@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
+using OpaDotNet.Compilation.Abstractions;
 using OpaDotNet.Compilation.Interop;
 using OpaDotNet.Extensions.AspNetCore.Tests.Common;
 using OpaDotNet.Wasm;
@@ -33,12 +34,15 @@ public sealed class FileSystemPolicySourceTests : IDisposable
 
     private record UserPolicyInput([UsedImplicitly] string User);
 
-    [Fact]
-    public async Task Simple()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Simple(bool forceBundleWriter)
     {
         var opts = new OpaAuthorizationOptions
         {
             PolicyBundlePath = "./Watch",
+            ForceBundleWriter = forceBundleWriter,
             EngineOptions = new WasmPolicyEngineOptions
             {
                 SerializationOptions = new()
@@ -54,6 +58,7 @@ public sealed class FileSystemPolicySourceTests : IDisposable
             new RegoInteropCompiler(),
             new OptionsWrapper<OpaAuthorizationOptions>(opts),
             new OpaImportsAbiFactory(),
+            new OptionsWrapper<RegoCompilerOptions>(new()),
             _loggerFactory
             );
 
@@ -97,6 +102,7 @@ public sealed class FileSystemPolicySourceTests : IDisposable
             new RegoInteropCompiler(),
             new OptionsWrapper<OpaAuthorizationOptions>(opts),
             new OpaImportsAbiFactory(),
+            new OptionsWrapper<RegoCompilerOptions>(new()),
             _loggerFactory
             );
 

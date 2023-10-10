@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 
 using OpaDotNet.Compilation.Cli;
 using OpaDotNet.Extensions.AspNetCore;
+using OpaDotNet.Wasm;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,13 +32,10 @@ builder.Services.AddOpaAuthorization(
 
                 // Path where look for rego policies.
                 p.PolicyBundlePath = "./Policy";
-                p.EngineOptions = new()
-                {
-                    SerializationOptions = new()
-                    {
-                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    },
-                };
+                
+                p.EngineOptions = WasmPolicyEngineOptions.DefaultWithJsonOptions(
+                    pp => pp.PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                    );
             }
             );
     }

@@ -3,6 +3,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
+using OpaDotNet.Compilation.Abstractions;
 using OpaDotNet.Compilation.Interop;
 using OpaDotNet.Extensions.AspNetCore.Tests.Common;
 
@@ -44,6 +45,7 @@ public class OpaPolicyServiceTests
             new RegoInteropCompiler(),
             opts,
             new OpaImportsAbiFactory(),
+            new OptionsWrapper<RegoCompilerOptions>(new()),
             _loggerFactory
             );
 

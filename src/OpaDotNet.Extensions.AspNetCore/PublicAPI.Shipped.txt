@@ -12,7 +12,7 @@ OpaDotNet.Extensions.AspNetCore.ConfigurationPolicySource.ConfigurationPolicySou
 OpaDotNet.Extensions.AspNetCore.CoreImportsAbi
 OpaDotNet.Extensions.AspNetCore.CoreImportsAbi.CoreImportsAbi(Microsoft.Extensions.Logging.ILogger<OpaDotNet.Extensions.AspNetCore.CoreImportsAbi!>? logger = null) -> void
 OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource
-OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource.FileSystemPolicySource(OpaDotNet.Compilation.Abstractions.IRegoCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! options, OpaDotNet.Extensions.AspNetCore.IOpaImportsAbiFactory! importsAbiFactory, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource.FileSystemPolicySource(OpaDotNet.Compilation.Abstractions.IRegoCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! options, OpaDotNet.Extensions.AspNetCore.IOpaImportsAbiFactory! importsAbiFactory, Microsoft.Extensions.Options.IOptions<OpaDotNet.Compilation.Abstractions.RegoCompilerOptions!>! compilerOptions, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 OpaDotNet.Extensions.AspNetCore.IConnectionInput
 OpaDotNet.Extensions.AspNetCore.IConnectionInput.LocalIpAddress.get -> string?
 OpaDotNet.Extensions.AspNetCore.IConnectionInput.LocalPort.get -> int
@@ -49,6 +49,8 @@ OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.EngineOptions.get -> Opa
 OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.EngineOptions.set -> void
 OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.Entrypoints.get -> System.Collections.Generic.HashSet<string!>?
 OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.Entrypoints.set -> void
+OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.ForceBundleWriter.get -> bool
+OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.ForceBundleWriter.set -> void
 OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.IncludeClaimsInHttpRequest.get -> bool
 OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.IncludeClaimsInHttpRequest.set -> void
 OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions.MaximumEvaluatorsRetained.get -> int

@@ -31,6 +31,17 @@ public class OpaAuthorizationOptions
     public string? PolicyBundlePath { get; set; }
 
     /// <summary>
+    /// If <c>true</c> bundle contents are resolved prior sending to compiler; otherwise compiler will resolve
+    /// bundle contents by itself.
+    /// </summary>
+    /// <remarks>
+    /// This option is less efficient but useful for cases when underlying compiler has troubles resolving bundle contents
+    /// from the file system, specifically when symlinks are involved.
+    /// </remarks>
+    [UsedImplicitly]
+    public bool ForceBundleWriter { get; set; }
+
+    /// <summary>
     /// List of permitted policy entrypoints.
     /// </summary>
     [UsedImplicitly]

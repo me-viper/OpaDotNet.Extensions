@@ -112,16 +112,16 @@ public static class ServiceCollectionExtensions
         Action<TOptions> configuration,
         Func<IServiceProvider, TCompiler>? buildCompiler = null)
         where TCompiler : class, IRegoCompiler
-        where TOptions : class
+        where TOptions : RegoCompilerOptions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         builder.Services.Configure(configuration);
 
         if (buildCompiler == null)
-            builder.AddCompiler<TCompiler>();
+            builder.Services.TryAddSingleton<IRegoCompiler, TCompiler>();
         else
-            builder.AddCompiler(buildCompiler);
+            builder.Services.TryAddSingleton<IRegoCompiler>(buildCompiler);
 
         return builder;
     }
@@ -131,7 +131,10 @@ public static class ServiceCollectionExtensions
         where T : class, IRegoCompiler
     {
         ArgumentNullException.ThrowIfNull(builder);
+
+        builder.Services.Configure<RegoCompilerOptions>(_ => { });
         builder.Services.TryAddSingleton<IRegoCompiler, T>();
+
         return builder;
     }
 
@@ -141,7 +144,10 @@ public static class ServiceCollectionExtensions
         where T : class, IRegoCompiler
     {
         ArgumentNullException.ThrowIfNull(builder);
+
+        builder.Services.Configure<RegoCompilerOptions>(_ => { });
         builder.Services.TryAddSingleton<IRegoCompiler>(buildCompiler);
+
         return builder;
     }
 
