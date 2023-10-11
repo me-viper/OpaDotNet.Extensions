@@ -32,7 +32,7 @@ builder.Services.AddOpaAuthorization(
 
                 // Path where look for rego policies.
                 p.PolicyBundlePath = "./Policy";
-                
+
                 p.EngineOptions = WasmPolicyEngineOptions.DefaultWithJsonOptions(
                     pp => pp.PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                     );

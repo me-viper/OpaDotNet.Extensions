@@ -22,6 +22,8 @@ builder.Services.AddOpaAuthorization(
 
         // Get policies from the file system.
         cfg.AddFileSystemPolicySource();
+
+        // Register custom built-ins.
         cfg.AddImportsAbi<CompositeCustomAbi>();
 
         // Configure.
@@ -169,6 +171,7 @@ internal class CompositeCustomAbi : CoreImportsAbi, ICapabilitiesProvider
 
     public Stream GetCapabilities()
     {
+        // Merge Custom1 and Custom2 capabilities.
         return BundleWriter.MergeCapabilities(_custom1.GetCapabilities(), _custom2.GetCapabilities());
     }
 }
