@@ -1,4 +1,6 @@
-﻿using OpaDotNet.Wasm;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+
+using OpaDotNet.Wasm;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 

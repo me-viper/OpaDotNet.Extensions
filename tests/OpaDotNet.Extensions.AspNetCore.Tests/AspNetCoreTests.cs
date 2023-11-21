@@ -521,7 +521,11 @@ public class AspNetCoreTests
                         app.UseEndpoints(
                             p =>
                             {
-                                p.MapGet("/az/attr", [OpaPolicyAuthorize("az", "attr")](context) => Task.FromResult(Results.Ok()));
+                                p.MapGet(
+                                    "/az/attr",
+                                    [OpaPolicyAuthorize("az", "attr")](HttpContext context, CancellationToken ct)
+                                        => Task.FromResult(Results.Ok())
+                                    );
                                 p.MapGet(
                                     "/az/svc",
                                     async ([FromServices] IAuthorizationService azs, ClaimsPrincipal user, HttpContext context) =>
@@ -547,6 +551,14 @@ public class AspNetCoreTests
 
 internal class TestAuthenticationSchemeHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
+#if NET8_0_OR_GREATER
+    public TestAuthenticationSchemeHandler(
+        IOptionsMonitor<AuthenticationSchemeOptions> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder) : base(options, logger, encoder)
+    {
+    }
+#else
     public TestAuthenticationSchemeHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
@@ -554,6 +566,7 @@ internal class TestAuthenticationSchemeHandler : AuthenticationHandler<Authentic
         ISystemClock clock) : base(options, logger, encoder, clock)
     {
     }
+#endif
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
