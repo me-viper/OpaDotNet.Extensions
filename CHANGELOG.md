@@ -5,6 +5,7 @@
 ### Features
 
 * [#3](https://github.com/me-viper/OpaDotNet.Extensions/issues/3). Support net8.0 ([c702cba](https://github.com/me-viper/OpaDotNet.Extensions/commit/c702cba2dc32206612ecd4b5d683f42d03bb078c))
+* [#4](https://github.com/me-viper/OpaDotNet.Extensions/issues/4). Support precompiled bundles ([d5e5ace](https://github.com/me-viper/OpaDotNet.Extensions/commit/d5e5ace324234d0cbb05b99830b5e76b3092033a))
 
 ## OpaDotNet.Extensions v2.0.0 (2023-09-28)
 
