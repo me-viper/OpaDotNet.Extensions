@@ -2,12 +2,10 @@
 
 using JetBrains.Annotations;
 
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using OpaDotNet.Compilation.Abstractions;
 using OpaDotNet.Compilation.Interop;
-using OpaDotNet.Extensions.AspNetCore.Tests.Common;
 using OpaDotNet.Wasm;
 
 using Xunit.Abstractions;
@@ -15,20 +13,19 @@ using Xunit.Abstractions;
 namespace OpaDotNet.Extensions.AspNetCore.Tests;
 
 [UsedImplicitly]
-public sealed class FileSystemPolicySourceTests : PathPolicySourceTests<FileSystemPolicySource>
+public class CompiledBundlePolicySourceTests : PathPolicySourceTests<CompiledBundlePolicySource>
 {
-    public FileSystemPolicySourceTests(ITestOutputHelper output) : base(output)
+    public CompiledBundlePolicySourceTests(ITestOutputHelper output) : base(output)
     {
     }
 
-    protected override FileSystemPolicySource CreatePolicySource(
+    protected override CompiledBundlePolicySource CreatePolicySource(
         bool forceBundleWriter,
         Action<OpaAuthorizationOptions>? configure = null)
     {
         var opts = new OpaAuthorizationOptions
         {
-            PolicyBundlePath = "./Watch",
-            ForceBundleWriter = forceBundleWriter,
+            PolicyBundlePath = "./Watch/policy.tar.gz",
             EngineOptions = new WasmPolicyEngineOptions
             {
                 SerializationOptions = new()
@@ -40,17 +37,20 @@ public sealed class FileSystemPolicySourceTests : PathPolicySourceTests<FileSyst
 
         configure?.Invoke(opts);
 
-        return new FileSystemPolicySource(
+        return new CompiledBundlePolicySource(
             new RegoInteropCompiler(),
             new OptionsWrapper<OpaAuthorizationOptions>(opts),
             new OpaImportsAbiFactory(),
-            new OptionsWrapper<RegoCompilerOptions>(new()),
             LoggerFactory
             );
     }
 
     protected override async Task WritePolicy(string policy)
     {
-        await File.WriteAllTextAsync("./Watch/policy.rego", policy);
+        var compiler = new RegoInteropCompiler();
+        await using var bundle = await compiler.CompileSource(policy);
+
+        await using var fs = new FileStream("./Watch/policy.tar.gz", FileMode.Create);
+        await bundle.CopyToAsync(fs);
     }
 }

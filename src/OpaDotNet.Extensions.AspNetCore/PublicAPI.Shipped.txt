@@ -103,6 +103,15 @@ OpaDotNet.Extensions.AspNetCore.OpaPolicySource.LoggerFactory.get -> Microsoft.E
 OpaDotNet.Extensions.AspNetCore.OpaPolicySource.OnPolicyUpdated() -> Microsoft.Extensions.Primitives.IChangeToken!
 OpaDotNet.Extensions.AspNetCore.OpaPolicySource.OpaPolicySource(OpaDotNet.Compilation.Abstractions.IRegoCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! options, OpaDotNet.Extensions.AspNetCore.IOpaImportsAbiFactory! importsAbiFactory, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicySource.Options.get -> Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>!
+OpaDotNet.Extensions.AspNetCore.PathPolicySource
+OpaDotNet.Extensions.AspNetCore.PathPolicySource.MonitoringEnabled.get -> bool
+OpaDotNet.Extensions.AspNetCore.PathPolicySource.NeedsRecompilation.get -> bool
+OpaDotNet.Extensions.AspNetCore.PathPolicySource.NeedsRecompilation.set -> void
+OpaDotNet.Extensions.AspNetCore.PathPolicySource.PathPolicySource(OpaDotNet.Compilation.Abstractions.IRegoCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! options, OpaDotNet.Extensions.AspNetCore.IOpaImportsAbiFactory! importsAbiFactory, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+OpaDotNet.Extensions.AspNetCore.PathPolicySource.PolicyWatcher.get -> System.IDisposable?
+OpaDotNet.Extensions.AspNetCore.PathPolicySource.PolicyWatcher.init -> void
+OpaDotNet.Extensions.AspNetCore.CompiledBundlePolicySource
+OpaDotNet.Extensions.AspNetCore.CompiledBundlePolicySource.CompiledBundlePolicySource(OpaDotNet.Compilation.Abstractions.IRegoCompiler! compiler, Microsoft.Extensions.Options.IOptions<OpaDotNet.Extensions.AspNetCore.OpaAuthorizationOptions!>! options, OpaDotNet.Extensions.AspNetCore.IOpaImportsAbiFactory! importsAbiFactory, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions
 override OpaDotNet.Extensions.AspNetCore.ConfigurationPolicySource.CompileBundleFromSource(bool recompiling, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.IO.Stream?>!
 override OpaDotNet.Extensions.AspNetCore.ConfigurationPolicySource.Dispose(bool disposing) -> void
@@ -110,11 +119,12 @@ override OpaDotNet.Extensions.AspNetCore.CoreImportsAbi.OnError(OpaDotNet.Wasm.B
 override OpaDotNet.Extensions.AspNetCore.CoreImportsAbi.Print(System.Collections.Generic.IEnumerable<string!>! args) -> void
 override OpaDotNet.Extensions.AspNetCore.CoreImportsAbi.PrintLn(string! message) -> void
 override OpaDotNet.Extensions.AspNetCore.CoreImportsAbi.Trace(string! message) -> bool
-override OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource.StartAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
-override OpaDotNet.Extensions.AspNetCore.FileSystemPolicySource.StopAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement) -> System.Threading.Tasks.Task!
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyHandler<TResource>.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context, OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement! requirement, TResource resource) -> System.Threading.Tasks.Task!
 override OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.ToString() -> string!
+override OpaDotNet.Extensions.AspNetCore.PathPolicySource.Dispose(bool disposing) -> void
+override OpaDotNet.Extensions.AspNetCore.PathPolicySource.StartAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+override OpaDotNet.Extensions.AspNetCore.PathPolicySource.StopAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddCompiler<T>(this OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder! builder, System.Func<System.IServiceProvider!, T!>! buildCompiler) -> OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!
 static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddCompiler<T>(this OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder! builder) -> OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!
 static OpaDotNet.Extensions.AspNetCore.ServiceCollectionExtensions.AddCompiler<TCompiler, TOptions>(this OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder! builder, System.Action<TOptions!>! configuration, System.Func<System.IServiceProvider!, TCompiler!>? buildCompiler = null) -> OpaDotNet.Extensions.AspNetCore.IOpaAuthorizationBuilder!

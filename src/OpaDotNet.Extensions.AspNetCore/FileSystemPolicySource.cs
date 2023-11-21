@@ -7,18 +7,8 @@ using OpaDotNet.Compilation.Abstractions;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
-public sealed class FileSystemPolicySource : OpaPolicySource
+public sealed class FileSystemPolicySource : PathPolicySource
 {
-    private readonly IDisposable? _policyWatcher;
-
-    private readonly PeriodicTimer? _changesMonitor;
-
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
-
-    private bool _needsRecompilation;
-
-    private bool MonitoringEnabled => Options.Value.MonitoringInterval > TimeSpan.Zero;
-
     private readonly IOptions<RegoCompilerOptions> _compilerOptions;
 
     public FileSystemPolicySource(
@@ -29,9 +19,6 @@ public sealed class FileSystemPolicySource : OpaPolicySource
         ILoggerFactory loggerFactory) : base(compiler, options, importsAbiFactory, loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(compilerOptions);
-
-        if (string.IsNullOrWhiteSpace(options.Value.PolicyBundlePath))
-            throw new InvalidOperationException("Compiler requires OpaAuthorizationOptions.PolicyBundlePath specified");
 
         var path = Options.Value.PolicyBundlePath!;
         _compilerOptions = compilerOptions;
@@ -58,11 +45,10 @@ public sealed class FileSystemPolicySource : OpaPolicySource
             void OnPolicyChange()
             {
                 Logger.LogDebug("Detected changes in policy");
-                _needsRecompilation = true;
+                NeedsRecompilation = true;
             }
 
-            _policyWatcher = ChangeToken.OnChange(MakePolicyChangeToken, OnPolicyChange);
-            _changesMonitor = new(Options.Value.MonitoringInterval);
+            PolicyWatcher = ChangeToken.OnChange(MakePolicyChangeToken, OnPolicyChange);
         }
     }
 
@@ -111,75 +97,5 @@ public sealed class FileSystemPolicySource : OpaPolicySource
             if (capsStream != null)
                 await capsStream.DisposeAsync().ConfigureAwait(false);
         }
-    }
-
-    private async Task TrackPolicyChanged(CancellationToken cancellationToken)
-    {
-        if (!MonitoringEnabled || _changesMonitor == null)
-            return;
-
-        Logger.LogDebug("Watching for policy changes in {Path}", Options.Value.PolicyBundlePath);
-
-        while (await _changesMonitor.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
-        {
-            try
-            {
-                if (!_needsRecompilation)
-                    continue;
-
-                if (cancellationToken.IsCancellationRequested)
-                    break;
-
-                _needsRecompilation = false;
-
-                Logger.LogDebug("Detected changes. Recompiling");
-                await CompileBundle(true, cancellationToken).ConfigureAwait(false);
-                Logger.LogDebug("Recompilation succeeded");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Failed to process policy changes");
-                _needsRecompilation = true;
-            }
-        }
-
-        Logger.LogDebug("Stopped watching for policy changes");
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        try
-        {
-            if (disposing)
-            {
-                _changesMonitor?.Dispose();
-                _policyWatcher?.Dispose();
-                _cancellationTokenSource.Dispose();
-            }
-        }
-        finally
-        {
-            base.Dispose(disposing);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async Task StartAsync(CancellationToken cancellationToken)
-    {
-        await base.StartAsync(cancellationToken).ConfigureAwait(false);
-
-        if (MonitoringEnabled)
-        {
-            _ = Task.Run(() => TrackPolicyChanged(_cancellationTokenSource.Token), cancellationToken);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async Task StopAsync(CancellationToken cancellationToken)
-    {
-        await base.StopAsync(cancellationToken).ConfigureAwait(false);
-
-        _cancellationTokenSource.Cancel();
-        Logger.LogDebug("Stopped");
     }
 }
