@@ -1,5 +1,11 @@
 # Changelog
 
+## OpaDotNet.Extensions v2.2.0 (2024-01-10)
+
+### Features
+
+* Update dependencies ([0ac41b6](https://github.com/me-viper/OpaDotNet.Extensions/commit/0ac41b6bcedba9b98901bb735ea2a49cfcd6d568))
+
 ## OpaDotNet.Extensions v2.1.0 (2023-11-21)
 
 ### Features
