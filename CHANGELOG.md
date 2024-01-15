@@ -1,5 +1,11 @@
 # Changelog
 
+## OpaDotNet.Extensions v2.2.0 (2024-01-15)
+
+### Bug Fixes
+
+* [#5](https://github.com/me-viper/OpaDotNet.Extensions/issues/5). Fix AuthorizationPolicyProvider composition ([3bf0ad7](https://github.com/me-viper/OpaDotNet.Extensions/commit/3bf0ad762c2f9a512a7b761cc2f01932ed9c7ab6))
+
 ## OpaDotNet.Extensions v2.2.0 (2024-01-10)
 
 ### Features
