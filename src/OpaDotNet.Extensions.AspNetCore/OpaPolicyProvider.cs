@@ -43,6 +43,6 @@ public class OpaPolicyProvider : IAuthorizationPolicyProvider
     [ExcludeFromCodeCoverage]
     public Task<AuthorizationPolicy?> GetFallbackPolicyAsync()
     {
-        return Task.FromResult<AuthorizationPolicy?>(null);
+        return _default.GetFallbackPolicyAsync();
     }
 }
