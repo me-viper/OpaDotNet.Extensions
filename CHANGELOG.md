@@ -1,6 +1,6 @@
 # Changelog
 
-## OpaDotNet.Extensions v2.2.0 (2024-01-15)
+## OpaDotNet.Extensions v2.3.0 (2024-01-15)
 
 ### Bug Fixes
 
