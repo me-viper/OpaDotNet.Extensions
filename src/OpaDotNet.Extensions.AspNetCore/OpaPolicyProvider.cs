@@ -1,24 +1,33 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
+using JetBrains.Annotations;
+
 using Microsoft.Extensions.Options;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
+[PublicAPI]
 public class OpaPolicyProvider : IAuthorizationPolicyProvider
 {
-    private readonly DefaultAuthorizationPolicyProvider _default;
+    private readonly IAuthorizationPolicyProvider _default;
 
     public OpaPolicyProvider(IOptions<AuthorizationOptions> options)
+        : this(options, new DefaultAuthorizationPolicyProvider(options))
+    {
+    }
+
+    public OpaPolicyProvider(IOptions<AuthorizationOptions> options, IAuthorizationPolicyProvider defaultProvider)
     {
         ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(defaultProvider);
 
-        _default = new DefaultAuthorizationPolicyProvider(options);
+        _default = defaultProvider;
     }
 
     public Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
     {
         if (!OpaPolicyRequirement.TryParse(policyName, out var opr))
-            return Task.FromResult<AuthorizationPolicy?>(null);
+            return _default.GetPolicyAsync(policyName);
 
         var policy = new AuthorizationPolicyBuilder();
         policy.AddRequirements(opr);

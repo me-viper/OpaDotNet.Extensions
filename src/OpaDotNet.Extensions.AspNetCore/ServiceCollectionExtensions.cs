@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 using OpaDotNet.Compilation.Abstractions;
 using OpaDotNet.Wasm;
@@ -224,7 +225,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddOptions();
         services.TryAddSingleton<OpaEvaluatorPoolProvider>();
-        services.TryAddSingleton<IAuthorizationPolicyProvider, OpaPolicyProvider>();
+        services.TryAddSingleton<IAuthorizationPolicyProvider>(
+            p => new OpaPolicyProvider(p.GetRequiredService<IOptions<AuthorizationOptions>>())
+            );
         services.TryAddSingleton<IAuthorizationHandler, OpaPolicyHandler>();
         services.TryAddSingleton<IOpaPolicyService, PooledOpaPolicyService>();
 

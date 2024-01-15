@@ -100,6 +100,44 @@ public class AspNetCoreTests
         Assert.NotNull(transaction.Response);
         Assert.Equal(expected, transaction.Response.StatusCode);
     }
+    [Theory]
+    [InlineData("u1", HttpStatusCode.OK)]
+    [InlineData("wrong", HttpStatusCode.Forbidden)]
+    public async Task CompositeAuthorizationPolicyProvider(string user, HttpStatusCode expected)
+    {
+        var server = CreateServer(
+            _output,
+            handler: async (context, _) =>
+            {
+                var azs = context.RequestServices.GetRequiredService<IAuthorizationService>();
+
+                var policy1 = await azs.AuthorizeAsync(context.User, new UserPolicyInput(user), "Opa/az/user");
+                var policy2 = await azs.AuthorizeAsync(context.User, null, "some");
+
+                if (!policy1.Succeeded || !policy2.Succeeded)
+                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+            },
+            configureServices: p =>
+            {
+                p.AddSingleton<IAuthorizationHandler, OpaPolicyHandler<UserPolicyInput>>();
+                p.AddAuthorization(pp => pp.AddPolicy("some", policy => policy.RequireAssertion(_ => true)));
+                return p;
+            }
+            );
+
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{server.BaseAddress}");
+
+        var transaction = new Transaction
+        {
+            Request = request,
+            Response = await server.CreateClient().SendAsync(request),
+        };
+
+        transaction.ResponseText = await transaction.Response.Content.ReadAsStringAsync();
+
+        Assert.NotNull(transaction.Response);
+        Assert.Equal(expected, transaction.Response.StatusCode);
+    }
 
     private record TestEvaluatorFactoryProvider(OpaEvaluatorFactory Factory) : IOpaPolicySource
     {

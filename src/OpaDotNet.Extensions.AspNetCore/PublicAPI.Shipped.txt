@@ -89,6 +89,7 @@ OpaDotNet.Extensions.AspNetCore.OpaPolicyProvider.GetDefaultPolicyAsync() -> Sys
 OpaDotNet.Extensions.AspNetCore.OpaPolicyProvider.GetFallbackPolicyAsync() -> System.Threading.Tasks.Task<Microsoft.AspNetCore.Authorization.AuthorizationPolicy?>!
 OpaDotNet.Extensions.AspNetCore.OpaPolicyProvider.GetPolicyAsync(string! policyName) -> System.Threading.Tasks.Task<Microsoft.AspNetCore.Authorization.AuthorizationPolicy?>!
 OpaDotNet.Extensions.AspNetCore.OpaPolicyProvider.OpaPolicyProvider(Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Authorization.AuthorizationOptions!>! options) -> void
+OpaDotNet.Extensions.AspNetCore.OpaPolicyProvider.OpaPolicyProvider(Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Authorization.AuthorizationOptions!>! options, Microsoft.AspNetCore.Authorization.IAuthorizationPolicyProvider! defaultProvider) -> void
 OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement
 OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.Entrypoint.get -> string!
 OpaDotNet.Extensions.AspNetCore.OpaPolicyRequirement.OpaPolicyRequirement(string! entrypoint) -> void
