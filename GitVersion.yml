@@ -1,9 +1,8 @@
-mode: ContinuousDelivery
+mode: Mainline
 tag-prefix: '[vV]'
 branches:
-  develop:
-    regex: ^dev(elop)?(ment)?$
-    tag: preview
+  release:
+    tag: pre
 ignore:
   sha: []
 merge-message-formats: {}

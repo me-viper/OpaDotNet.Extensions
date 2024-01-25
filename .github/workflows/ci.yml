@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop, 'release/*' ]
+    branches: [ main, 'release/v*' ]
     paths-ignore:
       - 'docs/**'
       - '**.md'
