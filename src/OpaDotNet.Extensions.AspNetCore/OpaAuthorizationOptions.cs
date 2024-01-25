@@ -25,6 +25,12 @@ public class OpaAuthorizationOptions
     public bool IncludeClaimsInHttpRequest { get; set; }
 
     /// <summary>
+    /// Authentication schemes OPA policies will be evaluated against.
+    /// </summary>
+    [UsedImplicitly]
+    public HashSet<string> AuthenticationSchemes { get; set; } = new();
+
+    /// <summary>
     /// Directory containing policy bundle source code.
     /// </summary>
     [UsedImplicitly]

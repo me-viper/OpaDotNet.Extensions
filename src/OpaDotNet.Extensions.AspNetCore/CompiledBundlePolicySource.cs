@@ -32,7 +32,7 @@ public sealed class CompiledBundlePolicySource : PathPolicySource
 
         if (MonitoringEnabled)
         {
-            CompositeChangeToken MakePolicyChangeToken() => new( new[] { fileProvider.Watch(file), } );
+            CompositeChangeToken MakePolicyChangeToken() => new(new[] { fileProvider.Watch(file), });
 
             void OnPolicyChange()
             {

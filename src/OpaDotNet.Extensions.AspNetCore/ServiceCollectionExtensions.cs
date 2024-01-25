@@ -210,8 +210,10 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configure);
 
-        services.AddOpaAuthorization();
-        configure(new OpaAuthorizationBuilder(services));
+        var builder = new OpaAuthorizationBuilder(services);
+        configure(builder);
+
+        services.AddOpaAuthorization(builder);
 
         services.TryAddTransient<IOpaImportsAbi, CoreImportsAbi>();
         services.TryAddSingleton<IOpaImportsAbiFactory>(
@@ -221,12 +223,15 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddOpaAuthorization(this IServiceCollection services)
+    private static IServiceCollection AddOpaAuthorization(this IServiceCollection services, OpaAuthorizationBuilder builder)
     {
         services.AddOptions();
         services.TryAddSingleton<OpaEvaluatorPoolProvider>();
         services.TryAddSingleton<IAuthorizationPolicyProvider>(
-            p => new OpaPolicyProvider(p.GetRequiredService<IOptions<AuthorizationOptions>>())
+            p => new OpaPolicyProvider(
+                p.GetRequiredService<IOptions<AuthorizationOptions>>(),
+                p.GetRequiredService<IOptions<OpaAuthorizationOptions>>()
+                )
             );
         services.TryAddSingleton<IAuthorizationHandler, OpaPolicyHandler>();
         services.TryAddSingleton<IOpaPolicyService, PooledOpaPolicyService>();

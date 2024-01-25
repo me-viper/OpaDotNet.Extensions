@@ -49,3 +49,11 @@ claims if {
     claim.type == "claimX"
     claim.value == "valueY"
 }
+
+# METADATA
+# entrypoint: true
+auth_scheme if {
+    some claim in input.claims
+    claim.type == "scheme"
+    claim.value == "Valid"
+}

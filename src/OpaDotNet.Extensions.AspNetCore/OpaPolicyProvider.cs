@@ -11,16 +11,22 @@ public class OpaPolicyProvider : IAuthorizationPolicyProvider
 {
     private readonly IAuthorizationPolicyProvider _default;
 
-    public OpaPolicyProvider(IOptions<AuthorizationOptions> options)
-        : this(options, new DefaultAuthorizationPolicyProvider(options))
+    private readonly IReadOnlySet<string> _authenticationSchemes;
+
+    public OpaPolicyProvider(IOptions<AuthorizationOptions> options, IOptions<OpaAuthorizationOptions> opaOptions)
+        : this(options, opaOptions, new DefaultAuthorizationPolicyProvider(options))
     {
     }
 
-    public OpaPolicyProvider(IOptions<AuthorizationOptions> options, IAuthorizationPolicyProvider defaultProvider)
+    public OpaPolicyProvider(
+        IOptions<AuthorizationOptions> options,
+        IOptions<OpaAuthorizationOptions> opaOptions,
+        IAuthorizationPolicyProvider defaultProvider)
     {
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(defaultProvider);
 
+        _authenticationSchemes = opaOptions.Value.AuthenticationSchemes;
         _default = defaultProvider;
     }
 
@@ -29,7 +35,8 @@ public class OpaPolicyProvider : IAuthorizationPolicyProvider
         if (!OpaPolicyRequirement.TryParse(policyName, out var opr))
             return _default.GetPolicyAsync(policyName);
 
-        var policy = new AuthorizationPolicyBuilder();
+        var policy = new AuthorizationPolicyBuilder(_authenticationSchemes.ToArray());
+
         policy.AddRequirements(opr);
         return Task.FromResult<AuthorizationPolicy?>(policy.Build());
     }

@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 
 using JetBrains.Annotations;
@@ -17,7 +16,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 
 using OpaDotNet.Compilation.Abstractions;
@@ -29,20 +27,13 @@ using Xunit.Abstractions;
 
 namespace OpaDotNet.Extensions.AspNetCore.Tests;
 
-public class AspNetCoreTests
+public class AspNetCoreTests(ITestOutputHelper output)
 {
-    private readonly ITestOutputHelper _output;
-
-    public AspNetCoreTests(ITestOutputHelper output)
-    {
-        _output = output;
-    }
-
     [Fact]
     public async Task HttpRequestInput()
     {
         var server = CreateServer(
-            _output,
+            output,
             handler: async (context, _) =>
             {
                 var request = context.Request;
@@ -74,7 +65,7 @@ public class AspNetCoreTests
     public async Task Simple(string user, HttpStatusCode expected)
     {
         var server = CreateServer(
-            _output,
+            output,
             handler: async (context, _) =>
             {
                 var azs = context.RequestServices.GetRequiredService<IAuthorizationService>();
@@ -100,13 +91,14 @@ public class AspNetCoreTests
         Assert.NotNull(transaction.Response);
         Assert.Equal(expected, transaction.Response.StatusCode);
     }
+
     [Theory]
     [InlineData("u1", HttpStatusCode.OK)]
     [InlineData("wrong", HttpStatusCode.Forbidden)]
     public async Task CompositeAuthorizationPolicyProvider(string user, HttpStatusCode expected)
     {
         var server = CreateServer(
-            _output,
+            output,
             handler: async (context, _) =>
             {
                 var azs = context.RequestServices.GetRequiredService<IAuthorizationService>();
@@ -139,30 +131,6 @@ public class AspNetCoreTests
         Assert.Equal(expected, transaction.Response.StatusCode);
     }
 
-    private record TestEvaluatorFactoryProvider(OpaEvaluatorFactory Factory) : IOpaPolicySource
-    {
-        public IOpaEvaluator CreateEvaluator()
-        {
-            return Factory.Create();
-        }
-
-        private readonly CancellationChangeToken _cct = new(CancellationToken.None);
-
-        public void Dispose() => Factory.Dispose();
-
-        public IChangeToken OnPolicyUpdated() => _cct;
-
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-    }
-
     [Theory]
     [InlineData("u1", HttpStatusCode.OK)]
     [InlineData("wrong", HttpStatusCode.Forbidden)]
@@ -182,7 +150,7 @@ public class AspNetCoreTests
         var factory = new TestEvaluatorFactoryProvider(new OpaBundleEvaluatorFactory(policy, opts));
 
         var server = CreateServerFull(
-            _output,
+            output,
             handler: async (context, _) =>
             {
                 var azs = context.RequestServices.GetRequiredService<IAuthorizationService>();
@@ -194,7 +162,7 @@ public class AspNetCoreTests
             },
             configureServices: p =>
             {
-                p.AddLogging(p => p.AddXunit(_output).AddFilter(pp => pp > LogLevel.Trace));
+                p.AddLogging(p => p.AddXunit(output).AddFilter(pp => pp > LogLevel.Trace));
                 p.AddSingleton<IAuthorizationHandler, OpaPolicyHandler<UserPolicyInput>>();
 
                 p.AddOpaAuthorization(
@@ -236,7 +204,7 @@ public class AspNetCoreTests
     public async Task ParallelSimple(string user, HttpStatusCode expected)
     {
         var server = CreateServer(
-            _output,
+            output,
             handler: async (context, _) =>
             {
                 var azs = context.RequestServices.GetRequiredService<IAuthorizationService>();
@@ -272,7 +240,7 @@ public class AspNetCoreTests
     public async Task Jwt()
     {
         var server = CreateServer(
-            _output,
+            output,
             handler: async (context, _) =>
             {
                 var request = context.Request;
@@ -321,7 +289,7 @@ public class AspNetCoreTests
     [InlineData("az/svc", "xxx", HttpStatusCode.Forbidden)]
     public async Task RouteAuthorization(string path, string? user = null, HttpStatusCode expected = HttpStatusCode.OK)
     {
-        var server = CreateServer(_output);
+        var server = CreateServer(output);
         var request = new HttpRequestMessage(HttpMethod.Get, $"{server.BaseAddress}{path}");
         var handler = new JwtSecurityTokenHandler();
 
@@ -354,7 +322,7 @@ public class AspNetCoreTests
     public async Task Claims()
     {
         var server = CreateServer(
-            _output,
+            output,
             handler: async (context, _) =>
             {
                 var request = context.Request;
@@ -395,7 +363,7 @@ public class AspNetCoreTests
     public async Task Composite(string user, HttpStatusCode expected)
     {
         var server = CreateServer(
-            _output,
+            output,
             handler: async (context, _) =>
             {
                 var azs = context.RequestServices.GetRequiredService<IAuthorizationService>();
@@ -432,32 +400,24 @@ public class AspNetCoreTests
         public bool Admin { get; [UsedImplicitly] set; }
     }
 
-    private class ComplexAuthorizationHandler : AuthorizationHandler<OpaPolicyRequirement, UserPolicyInput>
+    private class ComplexAuthorizationHandler(IOpaPolicyService service, IOptions<OpaAuthorizationOptions> options)
+        : AuthorizationHandler<OpaPolicyRequirement, UserPolicyInput>
     {
-        private readonly IOpaPolicyService _service;
-        private readonly IOptions<OpaAuthorizationOptions> _options;
-
-        public ComplexAuthorizationHandler(IOpaPolicyService service, IOptions<OpaAuthorizationOptions> options)
-        {
-            _service = service;
-            _options = options;
-        }
-
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
             OpaPolicyRequirement requirement,
             UserPolicyInput resource)
         {
-            var result1 = _service.Evaluate<UserPolicyInput, UserAccessPolicyOutput>(resource, requirement.Entrypoint);
+            var result1 = service.Evaluate<UserPolicyInput, UserAccessPolicyOutput>(resource, requirement.Entrypoint);
 
             if (result1 is not { Access: true, Admin: true })
                 return Task.CompletedTask;
 
-            var inputRaw = JsonSerializer.Serialize(resource, _options.Value.EngineOptions?.SerializationOptions);
-            var result2Raw = _service.EvaluateRaw(inputRaw, requirement.Entrypoint);
+            var inputRaw = JsonSerializer.Serialize(resource, options.Value.EngineOptions?.SerializationOptions);
+            var result2Raw = service.EvaluateRaw(inputRaw, requirement.Entrypoint);
             var result2 = JsonSerializer.Deserialize<PolicyEvaluationResult<UserAccessPolicyOutput>[]>(
                 result2Raw,
-                _options.Value.EngineOptions?.SerializationOptions
+                options.Value.EngineOptions?.SerializationOptions
                 );
 
             if (result2![0].Result is { Access: true, Admin: true })
@@ -584,34 +544,5 @@ public class AspNetCoreTests
             server.BaseAddress = baseAddress;
 
         return server;
-    }
-}
-
-internal class TestAuthenticationSchemeHandler : AuthenticationHandler<AuthenticationSchemeOptions>
-{
-#if NET8_0_OR_GREATER
-    public TestAuthenticationSchemeHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder) : base(options, logger, encoder)
-    {
-    }
-#else
-    public TestAuthenticationSchemeHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder,
-        ISystemClock clock) : base(options, logger, encoder, clock)
-    {
-    }
-#endif
-
-    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
-    {
-        var principal = new ClaimsPrincipal();
-        var ticket = new AuthenticationTicket(principal, "Test");
-        var result = AuthenticateResult.Success(ticket);
-
-        return Task.FromResult(result);
     }
 }
