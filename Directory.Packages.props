@@ -13,7 +13,7 @@
     <PackageVersion Include="OpaDotNet.Compilation.Abstractions" Version="1.6.0" />
     <PackageVersion Include="OpaDotNet.Compilation.Cli" Version="1.6.0" />
     <PackageVersion Include="OpaDotNet.Compilation.Interop" Version="1.6.0" />
-    <PackageVersion Include="OpaDotNet.Wasm" Version="2.4.0" />
+    <PackageVersion Include="OpaDotNet.Wasm" Version="2.4.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageVersion Include="xunit" Version="2.6.5" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.4">
