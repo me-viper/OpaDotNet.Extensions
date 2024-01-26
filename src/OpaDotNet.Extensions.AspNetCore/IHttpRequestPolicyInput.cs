@@ -1,4 +1,7 @@
-﻿using JetBrains.Annotations;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
+using JetBrains.Annotations;
 
 using Microsoft.AspNetCore.Http;
 
@@ -17,7 +20,28 @@ public interface IConnectionInput
 }
 
 [PublicAPI]
+[JsonConverter(typeof(ClaimPolicyInputJsonSerializer))]
 public record ClaimPolicyInput(string Type, string Value);
+
+internal class ClaimPolicyInputJsonSerializer : JsonConverter<ClaimPolicyInput>
+{
+    public override ClaimPolicyInput? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        throw new NotSupportedException("Deserialization is not supported");
+    }
+
+    public override void Write(Utf8JsonWriter writer, ClaimPolicyInput value, JsonSerializerOptions options)
+    {
+        var typeProp = options.PropertyNamingPolicy?.ConvertName(nameof(ClaimPolicyInput.Type)) ?? nameof(ClaimPolicyInput.Type);
+        var valProp = options.PropertyNamingPolicy?.ConvertName(nameof(ClaimPolicyInput.Value)) ?? nameof(ClaimPolicyInput.Value);
+
+        writer.WriteStartObject();
+        writer.WriteString(typeProp, value.Type);
+        writer.WritePropertyName(valProp);
+        writer.WriteRawValue(value.Value);
+        writer.WriteEndObject();
+    }
+}
 
 [PublicAPI]
 public interface IHttpRequestPolicyInput

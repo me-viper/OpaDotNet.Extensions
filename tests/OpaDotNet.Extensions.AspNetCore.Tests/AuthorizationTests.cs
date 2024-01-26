@@ -74,7 +74,7 @@ public class AuthorizationTests(ITestOutputHelper output)
                                     pp.AllowedHeaders.Add(".*");
                                     pp.IncludeClaimsInHttpRequest = true;
                                     pp.EngineOptions = opts;
-                                    pp.AuthenticationSchemes = [ targetScheme ];
+                                    pp.AuthenticationSchemes = [targetScheme];
                                 }
                                 );
                         }
