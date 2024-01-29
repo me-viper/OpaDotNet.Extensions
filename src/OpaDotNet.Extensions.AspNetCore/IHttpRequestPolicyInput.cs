@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 using JetBrains.Annotations;
@@ -67,6 +66,7 @@ public interface IHttpRequestPolicyInput
     IQueryCollection Query { get; }
 
     string Protocol { get; }
+
     IConnectionInput Connection { get; }
 
     IDictionary<string, string?> Headers { get; }
