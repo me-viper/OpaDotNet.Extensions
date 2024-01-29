@@ -1,5 +1,17 @@
 # Changelog
 
+## OpaDotNet.Extensions v2.4.0 (2024-01-30)
+
+### Bug Fixes
+
+* [#6](https://github.com/me-viper/OpaDotNet.Extensions/issues/6). Fix claim serialization ([98ea380](https://github.com/me-viper/OpaDotNet.Extensions/commit/98ea380f12fd879f876b6215428253bd14ceb8f6))
+
+### Features
+
+* Allow creating IHttpRequestPolicyInput instances for extensibility ([39dbc25](https://github.com/me-viper/OpaDotNet.Extensions/commit/39dbc255d82f5121aab5ad224a605af3e7f24455))
+* Allow to specify applicable authentication schemes ([e2ce5de](https://github.com/me-viper/OpaDotNet.Extensions/commit/e2ce5de387fc9bccc5f2b6c84e3068579fd884b5))
+* Bump OpaDotNet version ([3a72ad2](https://github.com/me-viper/OpaDotNet.Extensions/commit/3a72ad260338675592f74b1d902715141866e2d0))
+
 ## OpaDotNet.Extensions v2.3.0 (2024-01-15)
 
 ### Bug Fixes
