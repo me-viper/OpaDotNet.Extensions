@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 using JetBrains.Annotations;
@@ -38,7 +39,12 @@ internal class ClaimPolicyInputJsonSerializer : JsonConverter<ClaimPolicyInput>
         writer.WriteStartObject();
         writer.WriteString(typeProp, value.Type);
         writer.WritePropertyName(valProp);
-        writer.WriteRawValue(value.Value);
+
+        if (value.Value.Length > 1 && value.Value[0] == '[')
+            writer.WriteRawValue(value.Value);
+        else
+            writer.WriteStringValue(value.Value);
+
         writer.WriteEndObject();
     }
 }
