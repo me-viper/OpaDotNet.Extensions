@@ -20,6 +20,7 @@ OpaDotNet.Extensions.AspNetCore.IConnectionInput.LocalPort.get -> int
 OpaDotNet.Extensions.AspNetCore.IConnectionInput.RemoteIpAddress.get -> string?
 OpaDotNet.Extensions.AspNetCore.IConnectionInput.RemotePort.get -> int
 OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput
+OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Build(Microsoft.AspNetCore.Http.HttpRequest! request, System.Collections.Generic.IReadOnlySet<string!>! includedHeaders, System.Collections.Generic.IEnumerable<System.Security.Claims.Claim!>? claims) -> OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput!
 OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Claims.get -> System.Collections.Generic.IEnumerable<OpaDotNet.Extensions.AspNetCore.ClaimPolicyInput!>!
 OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Connection.get -> OpaDotNet.Extensions.AspNetCore.IConnectionInput!
 OpaDotNet.Extensions.AspNetCore.IHttpRequestPolicyInput.Headers.get -> System.Collections.Generic.IDictionary<string!, string?>!

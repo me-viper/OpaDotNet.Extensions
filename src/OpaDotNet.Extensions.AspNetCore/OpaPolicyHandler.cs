@@ -67,7 +67,7 @@ public class OpaPolicyHandler : AuthorizationHandler<OpaPolicyRequirement>
                 request = rq;
             }
 
-            var input = new HttpRequestPolicyInput(
+            var input = IHttpRequestPolicyInput.Build(
                 request,
                 Options.Value.AllowedHeaders,
                 Options.Value.IncludeClaimsInHttpRequest ? context.User.Claims : null

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Security.Claims;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using JetBrains.Annotations;
@@ -72,4 +73,12 @@ public interface IHttpRequestPolicyInput
     IDictionary<string, string?> Headers { get; }
 
     IEnumerable<ClaimPolicyInput> Claims { get; }
+
+    static IHttpRequestPolicyInput Build(
+        HttpRequest request,
+        IReadOnlySet<string> includedHeaders,
+        IEnumerable<Claim>? claims)
+    {
+        return new HttpRequestPolicyInput(request, includedHeaders, claims);
+    }
 }
