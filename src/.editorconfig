@@ -1,0 +1,3 @@
+[*.{cs,vb}]
+
+dotnet_public_api_analyzer.require_api_files = false
