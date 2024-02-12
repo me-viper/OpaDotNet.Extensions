@@ -1,5 +1,11 @@
 # Changelog
 
+## OpaDotNet.Extensions v2.4.1 (2024-02-12)
+
+### Features
+
+* Bump dependencies
+
 ## OpaDotNet.Extensions v2.4.0 (2024-01-30)
 
 ### Bug Fixes
