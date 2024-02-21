@@ -3,6 +3,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
+using OpaDotNet.Extensions.AspNetCore.Telemetry;
+
 namespace OpaDotNet.Extensions.AspNetCore;
 
 [PublicAPI]
@@ -33,14 +35,19 @@ public class OpaPolicyHandler : AuthorizationHandler<OpaPolicyRequirement>
         OpaPolicyRequirement requirement,
         IHttpRequestPolicyInput resource)
     {
-        Logger.LogDebug("Evaluating policy");
+        Logger.PolicyEvaluating();
         var result = Service.EvaluatePredicate(resource, requirement.Entrypoint);
 
         if (!result)
-            Logger.LogDebug("Authorization policy denied");
+        {
+            Logger.PolicyDenied();
+            OpaEventSource.Log.PolicyDenied(requirement.Entrypoint);
+        }
         else
         {
-            Logger.LogDebug("Authorization policy succeeded");
+            Logger.PolicyAllowed();
+            OpaEventSource.Log.PolicyAllowed(requirement.Entrypoint);
+
             context.Succeed(requirement);
         }
 
@@ -51,7 +58,7 @@ public class OpaPolicyHandler : AuthorizationHandler<OpaPolicyRequirement>
         AuthorizationHandlerContext context,
         OpaPolicyRequirement requirement)
     {
-        using var scope = Logger.BeginScope(new { requirement.Entrypoint });
+        using var scope = Logger.BeginScope(new Dictionary<string, object> { { "Entrypoint", requirement.Entrypoint } });
 
         try
         {
@@ -77,7 +84,8 @@ public class OpaPolicyHandler : AuthorizationHandler<OpaPolicyRequirement>
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Authorization policy failed");
+            Logger.PolicyFailed(ex);
+            OpaEventSource.Log.PolicyFailed(requirement.Entrypoint);
         }
 
         return Task.CompletedTask;

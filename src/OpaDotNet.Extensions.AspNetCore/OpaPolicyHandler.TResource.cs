@@ -1,5 +1,7 @@
 ﻿using JetBrains.Annotations;
 
+using OpaDotNet.Extensions.AspNetCore.Telemetry;
+
 namespace OpaDotNet.Extensions.AspNetCore;
 
 [PublicAPI]
@@ -23,24 +25,30 @@ public class OpaPolicyHandler<TResource> : AuthorizationHandler<OpaPolicyRequire
         OpaPolicyRequirement requirement,
         TResource resource)
     {
-        using var scope = Logger.BeginScope(new { requirement.Entrypoint });
+        using var scope = Logger.BeginScope(new Dictionary<string, object> { { "Entrypoint", requirement.Entrypoint } });
 
         try
         {
-            Logger.LogDebug("Evaluating policy");
+            Logger.PolicyEvaluating();
             var result = Service.EvaluatePredicate(resource, requirement.Entrypoint);
 
             if (!result)
-                Logger.LogDebug("Failed");
+            {
+                Logger.PolicyDenied();
+                OpaEventSource.Log.PolicyDenied(requirement.Entrypoint);
+            }
             else
             {
-                Logger.LogDebug("Success");
+                Logger.PolicyAllowed();
+                OpaEventSource.Log.PolicyAllowed(requirement.Entrypoint);
+
                 context.Succeed(requirement);
             }
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Authorization policy failed");
+            Logger.PolicyFailed(ex);
+            OpaEventSource.Log.PolicyFailed(requirement.Entrypoint);
         }
 
         return Task.CompletedTask;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 
 using OpaDotNet.Compilation.Abstractions;
+using OpaDotNet.Extensions.AspNetCore.Telemetry;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
@@ -38,7 +39,7 @@ public abstract class PathPolicySource : OpaPolicySource
         if (!MonitoringEnabled || _changesMonitor == null)
             return;
 
-        Logger.LogDebug("Watching for policy changes in {Path}", Options.Value.PolicyBundlePath);
+        Logger.PolicySourceWatchStarted(Options.Value.PolicyBundlePath!);
 
         while (await _changesMonitor.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
         {
@@ -52,18 +53,16 @@ public abstract class PathPolicySource : OpaPolicySource
 
                 NeedsRecompilation = false;
 
-                Logger.LogDebug("Detected changes. Recompiling");
+                Logger.BundleCompilationHasChanges();
                 await CompileBundle(true, cancellationToken).ConfigureAwait(false);
-                Logger.LogDebug("Recompilation succeeded");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Logger.LogError(ex, "Failed to process policy changes");
                 NeedsRecompilation = true;
             }
         }
 
-        Logger.LogDebug("Stopped watching for policy changes");
+        Logger.PolicySourceWatchStopped();
     }
 
     protected override void Dispose(bool disposing)
@@ -105,6 +104,6 @@ public abstract class PathPolicySource : OpaPolicySource
         _cancellationTokenSource.Cancel();
 #endif
 
-        Logger.LogDebug("Stopped");
+        Logger.ServiceStopped();
     }
 }

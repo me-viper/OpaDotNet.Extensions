@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
 using OpaDotNet.Compilation.Abstractions;
+using OpaDotNet.Extensions.AspNetCore.Telemetry;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
@@ -44,7 +45,7 @@ public sealed class FileSystemPolicySource : PathPolicySource
 
             void OnPolicyChange()
             {
-                Logger.LogDebug("Detected changes in policy");
+                Logger.BundleCompilationHasChanges();
                 NeedsRecompilation = true;
             }
 

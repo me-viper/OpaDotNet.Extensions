@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
 using OpaDotNet.Compilation.Abstractions;
+using OpaDotNet.Extensions.AspNetCore.Telemetry;
 using OpaDotNet.Wasm;
 
 namespace OpaDotNet.Extensions.AspNetCore;
@@ -96,7 +97,7 @@ public abstract class OpaPolicySource : IOpaPolicySource
 
     protected internal async Task CompileBundle(bool recompiling, CancellationToken cancellationToken = default)
     {
-        Logger.LogDebug("Compiling");
+        Logger.BundleCompiling();
 
         try
         {
@@ -122,13 +123,14 @@ public abstract class OpaPolicySource : IOpaPolicySource
 
             if (recompiling)
             {
-                Logger.LogDebug("Recompilation completed. Triggering notifications");
+                Logger.BundleRecompilationSucceeded();
                 _changeTokenSource.Cancel();
             }
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Bundle compilation failed");
+            Logger.BundleCompilationFailed(ex);
+            OpaEventSource.Log.BundleCompilationFailed();
             throw;
         }
         finally
@@ -136,7 +138,8 @@ public abstract class OpaPolicySource : IOpaPolicySource
             _lock.Release();
         }
 
-        Logger.LogDebug("Compilation succeeded");
+        Logger.BundleCompilationSucceeded();
+        OpaEventSource.Log.BundleCompilationSucceeded();
     }
 
     /// <inheritdoc />

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
+using OpaDotNet.Extensions.AspNetCore.Telemetry;
 using OpaDotNet.Wasm;
 
 namespace OpaDotNet.Extensions.AspNetCore;
@@ -43,7 +44,7 @@ internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
 
     private void ResetPool()
     {
-        _logger.LogDebug("Recompiled. Resetting pool");
+        _logger.EvaluatorPoolResetting();
 
         lock (_syncLock)
         {
@@ -52,11 +53,11 @@ internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
 
             if (oldPool is not IDisposable pool)
             {
-                _logger.LogWarning("Pool is not disposable");
+                _logger.EvaluatorPoolNotDisposable();
                 return;
             }
 
-            _logger.LogDebug("Disposing old pool");
+            _logger.EvaluatorPoolDisposing();
             pool.Dispose();
         }
     }

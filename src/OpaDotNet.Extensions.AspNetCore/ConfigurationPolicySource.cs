@@ -3,6 +3,7 @@
 using Microsoft.Extensions.Options;
 
 using OpaDotNet.Compilation.Abstractions;
+using OpaDotNet.Extensions.AspNetCore.Telemetry;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
@@ -30,7 +31,7 @@ public class ConfigurationPolicySource : OpaPolicySource
                 {
                     if (!HasChanged(p, _opts))
                     {
-                        Logger.LogDebug("No changes in policies configuration");
+                        Logger.BundleCompilationNoChanges();
                         return;
                     }
 
