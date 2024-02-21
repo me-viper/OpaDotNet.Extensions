@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.ObjectPool;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using Microsoft.Extensions.ObjectPool;
 
 using OpaDotNet.Extensions.AspNetCore.Telemetry;
 using OpaDotNet.Wasm;
+using OpaDotNet.Wasm.Features;
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
@@ -16,15 +19,47 @@ internal class OpaEvaluatorPoolPolicy : PooledObjectPolicy<IOpaEvaluator>
         _factory = factory;
     }
 
-    public override IOpaEvaluator Create()
-    {
-        OpaEventSource.Log.EvaluatorCreated();
-        return _factory();
-    }
+    public override IOpaEvaluator Create() => new TrackedEvaluator(_factory());
 
-    public override bool Return(IOpaEvaluator obj)
+    public override bool Return(IOpaEvaluator obj) => true;
+
+    [ExcludeFromCodeCoverage]
+    private sealed class TrackedEvaluator : IOpaEvaluator
     {
-        OpaEventSource.Log.EvaluatorReleased();
-        return true;
+        private readonly IOpaEvaluator _inner;
+
+        public Version AbiVersion => _inner.AbiVersion;
+
+        public TrackedEvaluator(IOpaEvaluator inner)
+        {
+            _inner = inner;
+            OpaEventSource.Log.EvaluatorCreated();
+        }
+
+        public void Dispose()
+        {
+            _inner.Dispose();
+            OpaEventSource.Log.EvaluatorReleased();
+        }
+
+        public PolicyEvaluationResult<bool> EvaluatePredicate<TInput>(TInput input, string? entrypoint = null)
+            => _inner.EvaluatePredicate(input, entrypoint);
+
+        public PolicyEvaluationResult<TOutput> Evaluate<TInput, TOutput>(TInput input, string? entrypoint = null) where TOutput : notnull
+            => _inner.Evaluate<TInput, TOutput>(input, entrypoint);
+
+        public string EvaluateRaw(ReadOnlySpan<char> inputJson, string? entrypoint = null)
+            => _inner.EvaluateRaw(inputJson, entrypoint);
+
+        public void SetDataFromRawJson(ReadOnlySpan<char> dataJson) => _inner.SetDataFromRawJson(dataJson);
+
+        public void SetDataFromStream(Stream? utf8Json) => _inner.SetDataFromStream(utf8Json);
+
+        public void SetData<T>(T? data) where T : class => _inner.SetData(data);
+
+        public void Reset() => _inner.Reset();
+
+        public bool TryGetFeature<TFeature>([MaybeNullWhen(false)] out TFeature feature) where TFeature : class, IOpaEvaluatorFeature
+            => _inner.TryGetFeature(out feature);
     }
 }

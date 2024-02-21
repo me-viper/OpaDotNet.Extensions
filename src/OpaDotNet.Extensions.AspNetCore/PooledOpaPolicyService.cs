@@ -19,7 +19,7 @@ internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
 
     private readonly IOpaPolicySource _factoryProvider;
 
-    private readonly object _syncLock = new();
+    private readonly ReaderWriterLockSlim _syncLock = new();
 
     public PooledOpaPolicyService(
         IOpaPolicySource factoryProvider,
@@ -46,7 +46,9 @@ internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
     {
         _logger.EvaluatorPoolResetting();
 
-        lock (_syncLock)
+        _syncLock.EnterWriteLock();
+
+        try
         {
             var oldPool = _evaluatorPool;
             _evaluatorPool = _poolProvider.Create(new OpaEvaluatorPoolPolicy(() => _factoryProvider.CreateEvaluator()));
@@ -60,11 +62,17 @@ internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
             _logger.EvaluatorPoolDisposing();
             pool.Dispose();
         }
+        finally
+        {
+            _syncLock.ExitWriteLock();
+        }
     }
 
     public bool EvaluatePredicate<T>(T? input, string entrypoint)
     {
         ArgumentException.ThrowIfNullOrEmpty(entrypoint);
+
+        _syncLock.EnterReadLock();
 
         var pool = _evaluatorPool;
         var evaluator = pool.Get();
@@ -77,12 +85,15 @@ internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
         finally
         {
             pool.Return(evaluator);
+            _syncLock.ExitReadLock();
         }
     }
 
     public TOutput Evaluate<TInput, TOutput>(TInput input, string entrypoint) where TOutput : notnull
     {
         ArgumentException.ThrowIfNullOrEmpty(entrypoint);
+
+        _syncLock.EnterReadLock();
 
         var pool = _evaluatorPool;
         var evaluator = pool.Get();
@@ -95,12 +106,15 @@ internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
         finally
         {
             pool.Return(evaluator);
+            _syncLock.ExitReadLock();
         }
     }
 
     public string EvaluateRaw(ReadOnlySpan<char> inputJson, string entrypoint)
     {
         ArgumentException.ThrowIfNullOrEmpty(entrypoint);
+
+        _syncLock.EnterReadLock();
 
         var pool = _evaluatorPool;
         var evaluator = pool.Get();
@@ -112,6 +126,7 @@ internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
         finally
         {
             pool.Return(evaluator);
+            _syncLock.ExitReadLock();
         }
     }
 
@@ -121,5 +136,7 @@ internal class PooledOpaPolicyService : IOpaPolicyService, IDisposable
 
         if (_evaluatorPool is IDisposable d)
             d.Dispose();
+
+        _syncLock.Dispose();
     }
 }
