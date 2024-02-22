@@ -1,11 +1,13 @@
 ﻿using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 
+using JetBrains.Annotations;
+
 namespace OpaDotNet.Extensions.AspNetCore.Telemetry;
 
 internal sealed class OpaEventSource : EventSource
 {
-    public static readonly OpaEventSource Log = new();
+    public static OpaEventSource Log { get; } = new();
 
     private static readonly Counter<long> PolicyAllowedCounter = Utility.OpaMeter.CreateCounter<long>(
         "opadotnet_policies_allowed",
@@ -32,8 +34,12 @@ internal sealed class OpaEventSource : EventSource
         description: "Bundle compilations failed"
         );
 
-    private static readonly UpDownCounter<long> EvaluatorInstancesCounter = Utility.OpaMeter.CreateUpDownCounter<long>(
+    private static long _evaluatorInstances;
+
+    [UsedImplicitly]
+    private static readonly ObservableUpDownCounter<long> EvaluatorInstancesCounter = Utility.OpaMeter.CreateObservableUpDownCounter(
         "opadotnet_evaluator_instances",
+        observeValue: () => _evaluatorInstances,
         description: "Active evaluator instances"
         );
 
@@ -85,7 +91,7 @@ internal sealed class OpaEventSource : EventSource
     [Event(Utility.EvaluatorCreated, Level = EventLevel.Informational)]
     public void EvaluatorCreated()
     {
-        EvaluatorInstancesCounter.Add(1);
+        Interlocked.Increment(ref _evaluatorInstances);
 
         if (IsEnabled(EventLevel.Informational, EventKeywords.All))
             WriteEvent(Utility.EvaluatorCreated);
@@ -94,7 +100,7 @@ internal sealed class OpaEventSource : EventSource
     [Event(Utility.EvaluatorReleased, Level = EventLevel.Informational)]
     public void EvaluatorReleased()
     {
-        EvaluatorInstancesCounter.Add(-1);
+        Interlocked.Decrement(ref _evaluatorInstances);
 
         if (IsEnabled(EventLevel.Informational, EventKeywords.All))
             WriteEvent(Utility.EvaluatorReleased);

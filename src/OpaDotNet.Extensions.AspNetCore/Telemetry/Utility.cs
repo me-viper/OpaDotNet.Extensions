@@ -5,9 +5,11 @@ namespace OpaDotNet.Extensions.AspNetCore.Telemetry;
 
 internal static class Utility
 {
-    public static readonly ActivitySource OpaActivitySource = new("OpaDotNet.Extensions.AspNetCore", "2.0.0");
+    public const string Name = "OpaDotNet.Extensions.AspNetCore";
 
-    public static readonly Meter OpaMeter = new("OpaDotNet.Extensions.AspNetCore", "2.0.0");
+    public static readonly ActivitySource OpaActivitySource = new(Name, "2.0.0");
+
+    public static readonly Meter OpaMeter = new(Name, "2.0.0");
 
     public const int PolicyEvaluatingEventId = 1;
 
