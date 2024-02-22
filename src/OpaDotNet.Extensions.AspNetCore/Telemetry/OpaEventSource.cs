@@ -36,6 +36,8 @@ internal sealed class OpaEventSource : EventSource
 
     private static long _evaluatorInstances;
 
+    internal static long EvaluatorInstances => _evaluatorInstances;
+
     [UsedImplicitly]
     private static readonly ObservableUpDownCounter<long> EvaluatorInstancesCounter = Utility.OpaMeter.CreateObservableUpDownCounter(
         "opadotnet_evaluator_instances",

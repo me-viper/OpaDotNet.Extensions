@@ -32,14 +32,14 @@ internal class OpaEvaluatorPoolPolicy : PooledObjectPolicy<IOpaEvaluator>
 
         public TrackedEvaluator(IOpaEvaluator inner)
         {
-            _inner = inner;
             OpaEventSource.Log.EvaluatorCreated();
+            _inner = inner;
         }
 
         public void Dispose()
         {
-            _inner.Dispose();
             OpaEventSource.Log.EvaluatorReleased();
+            _inner.Dispose();
         }
 
         public PolicyEvaluationResult<bool> EvaluatePredicate<TInput>(TInput input, string? entrypoint = null)

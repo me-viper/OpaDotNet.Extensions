@@ -102,25 +102,50 @@ public class OpaPolicyServiceTests(ITestOutputHelper output)
 
         await compiler.StartAsync(CancellationToken.None);
 
-        using var service = new PooledOpaPolicyService(
+        using var pooledService = new PooledOpaPolicyService(
             compiler,
             opts,
             new OpaEvaluatorPoolProvider(),
             _loggerFactory.CreateLogger<PooledOpaPolicyService>()
             );
 
-        await Parallel.ForEachAsync(
+        var service = new CountingEvaluator(pooledService);
+
+        Parallel.ForEach(
             Enumerable.Range(0, 1000),
-            (_, _) =>
+            _ =>
             {
                 var result = service.EvaluatePredicate<object?>(null, "parallel/do");
                 Assert.True(result);
-                return ValueTask.CompletedTask;
             }
             );
 
+        Assert.Equal(0, service.Instances);
+        Assert.Equal(maxEvaluators, OpaEventSource.EvaluatorInstances);
+
         collector.RecordObservableInstruments();
         var measure = collector.GetMeasurementSnapshot();
+
         Assert.Equal(maxEvaluators, measure[0].Value);
+    }
+
+    private class CountingEvaluator(IOpaPolicyService inner) : IOpaPolicyService
+    {
+        public int Instances;
+
+        public bool EvaluatePredicate<TInput>(TInput input, string entrypoint)
+        {
+            Interlocked.Increment(ref Instances);
+            var result = inner.EvaluatePredicate(input, entrypoint);
+            Interlocked.Decrement(ref Instances);
+
+            return result;
+        }
+
+        public TOutput Evaluate<TInput, TOutput>(TInput input, string entrypoint) where TOutput : notnull
+            => inner.Evaluate<TInput, TOutput>(input, entrypoint);
+
+        public string EvaluateRaw(ReadOnlySpan<char> inputJson, string entrypoint)
+            => inner.EvaluateRaw(inputJson, entrypoint);
     }
 }
