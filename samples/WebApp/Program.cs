@@ -61,6 +61,9 @@ app.UseAuthorization();
 // Will evaluate example/allow rule and return 200.
 app.MapGet("/allow", [OpaPolicyAuthorize("example", "allow")]() => "Hi!");
 
+// Authorize attribute works too. Policy needs to be named 'Opa/{module}/{entrypoint}'.
+app.MapGet("/allow2", [Authorize("Opa/example/allow")]() => "Hi!");
+
 // Will evaluate example/deny rule with IAuthorizationService and return 403.
 app.MapGet(
     "/deny",
