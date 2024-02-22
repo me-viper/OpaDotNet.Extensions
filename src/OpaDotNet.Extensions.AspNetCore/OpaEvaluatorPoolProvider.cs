@@ -2,6 +2,4 @@
 
 namespace OpaDotNet.Extensions.AspNetCore;
 
-public class OpaEvaluatorPoolProvider : DefaultObjectPoolProvider
-{
-}
+public class OpaEvaluatorPoolProvider : DefaultObjectPoolProvider;
