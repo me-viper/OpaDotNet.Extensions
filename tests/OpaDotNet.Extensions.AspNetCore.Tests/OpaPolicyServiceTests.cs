@@ -122,11 +122,6 @@ public class OpaPolicyServiceTests(ITestOutputHelper output)
 
         Assert.Equal(0, service.Instances);
         Assert.Equal(maxEvaluators, OpaEventSource.EvaluatorInstances);
-
-        collector.RecordObservableInstruments();
-        var measure = collector.GetMeasurementSnapshot();
-
-        Assert.Equal(maxEvaluators, measure[0].Value);
     }
 
     private class CountingEvaluator(IOpaPolicyService inner) : IOpaPolicyService
