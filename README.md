@@ -1,4 +1,7 @@
-﻿[![CI](https://github.com/me-viper/OpaDotNet.Extensions/actions/workflows/ci.yml/badge.svg)](https://github.com/me-viper/OpaDotNet.Extensions/actions/workflows/ci.yml)
+> [!CAUTION]
+> This repository moved. Please use the new location: [OpaDotNet](https://github.com/me-viper/OpaDotNet/tree/main/src/Extensions.AspNetCore)
+
+[![CI](https://github.com/me-viper/OpaDotNet.Extensions/actions/workflows/ci.yml/badge.svg)](https://github.com/me-viper/OpaDotNet.Extensions/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/me-viper/OpaDotNet.Extensions/badge.svg)](https://coveralls.io/github/me-viper/OpaDotNet.Extensions)
 
 # Open Policy Agent (OPA) Extensions
